@@ -428,14 +428,14 @@ footer span{color:var(--g)}
     <div id="part-open">
       <div class="fw">
         <div class="fc">
-          <div class="fch"><h2>APÚNTATE A LA PORRA</h2><p>Plazo hasta el 10 de junio · Pago por Bizum · 10€</p></div>
+          <div class="fch"><h2>APÚNTATE A LA PORRA</h2><p>Plazo hasta el 10 de junio · Pago por transferencia · 10€</p></div>
           <div class="fb">
             <div class="stabs">
               <button class="stab on" id="st0" onclick="goStep(0)">1. Datos</button>
-              <button class="stab"   id="st1" onclick="goStep(1)">2. Premios</button>
-              <button class="stab"   id="st2" onclick="goStep(2)">3. Grupos</button>
-              <button class="stab"   id="st3" onclick="goStep(3)">4. Eliminatoria</button>
-              <button class="stab"   id="st4" onclick="goStep(4)">5. Confirmar</button>
+              <button class="stab"   id="st1" onclick="goStepGuard(1)">2. Premios</button>
+              <button class="stab"   id="st2" onclick="goStepGuard(2)">3. Grupos</button>
+              <button class="stab"   id="st3" onclick="goStepGuard(3)">4. Eliminatoria</button>
+              <button class="stab"   id="st4" onclick="goStepGuard(4)">5. Confirmar</button>
               <button class="stab"   id="st5">6. Pago</button>
             </div>
 
@@ -443,10 +443,10 @@ footer span{color:var(--g)}
             <div class="fstep on" id="fs0">
               <div class="sec-title">Datos personales</div>
               <div class="fg2">
-                <div class="ff"><label>Nombre * <span style="font-size:10px;color:var(--t3);font-weight:400">(como en el chat de NFQ)</span></label><input class="fi" id="f-nom" placeholder="Nombre (como en el chat de NFQ)"/></div>
-                <div class="ff"><label>Apellidos * <span style="font-size:10px;color:var(--t3);font-weight:400">(como en el chat de NFQ)</span></label><input class="fi" id="f-ap" placeholder="Apellidos (como en el chat de NFQ)"/></div>
+                <div class="ff"><label>Nombre *</label><input class="fi" id="f-nom" placeholder="Nombre (como en el chat de NFQ)"/></div>
+                <div class="ff"><label>Apellidos *</label><input class="fi" id="f-ap" placeholder="Apellidos (como en el chat de NFQ)"/></div>
               </div>
-              <div style="font-size:11px;color:var(--t3);margin-top:-4px;margin-bottom:4px">El mensaje del Bizum será: "Porra Nombre Apellidos"</div>
+              <div style="font-size:11px;color:var(--t3);margin-top:-4px;margin-bottom:4px">El concepto de la transferencia será: "Porra Nombre Apellidos"</div>
               <div class="bnav" style="margin-top:16px">
                 <button class="btn bp bsm" onclick="validateStep0()">Siguiente: Premios individuales →</button>
               </div>
@@ -518,7 +518,7 @@ footer span{color:var(--g)}
                 <div style="font-family:var(--fd);font-size:22px;letter-spacing:1px;color:var(--g)" id="cn-n">—</div>
                 <div style="font-size:12px;color:var(--t2);margin-top:3px" id="cn-b"></div>
               </div>
-              <div style="background:var(--bg2);border:1px solid var(--bd2);border-radius:var(--r);padding:13px 16px;display:grid;grid-template-columns:1fr 1fr;gap:7px;font-size:13px;margin-bottom:14px" id="cn-g"></div>
+              
               <button class="btn bg bsm" style="width:100%;justify-content:center;margin-bottom:10px" onclick="downloadPDF()">📄 Descargar PDF de mi porra</button>
               <div class="bnav">
                 <button class="btn bg bsm" onclick="goStep(3)">← Atrás</button>
@@ -661,7 +661,7 @@ footer span{color:var(--g)}
       <div class="man-sec"><h3>Ranking y porras de los demás</h3><p class="man-p">El ranking se actualiza automáticamente. Pulsa el nombre de cualquier participante para ver su porra completa — las predicciones de grupos se desvelan el 11 de junio y el bracket de eliminatoria cuando empiece el primer partido de 16avos. También puedes descargar el PDF de cualquier porra.</p></div>
       <div class="man-sec"><h3>Resultados en tiempo real</h3><p class="man-p">En <strong>Resultados</strong> ves todos los partidos, marcadores en directo, goleadores y estadísticas de predicciones. En <strong>Inicio</strong> aparecen los partidos del día con hora en horario de España.</p></div>
       <div class="man-sec"><h3>El Vestuario</h3><p class="man-p">Espacio para comentarios y quedadas. Publica con tu nombre o anónimamente. Un 👍 o 👎 por publicación — se puede cambiar.</p></div>
-      <div class="man-sec"><h3>¿Algo no funciona?</h3><p class="man-p">Escríbele por privado a <strong>César Esteban García</strong> en el chat de NFQ.</p></div>
+      <div class="man-sec"><h3>¿Algo no funciona?</h3><p class="man-p">Escríbele por privado a <strong>César Esteban García</strong>.</p></div>
     </div>
   </div>
 </div>
@@ -811,6 +811,7 @@ var PORRAS=[];
 var SB_POSTS=[];
 var API_IND={mvp:'',gol1:'',gol1n:0,gol2:'',gol2n:0,camp:'',sub:'',p3:'',p4:''};
 var API_GR_LIVE={};
+var API_KO_LIVE={};  // KO round results keyed by cid
 var API_LIVE_DATA=null;
 var API_CACHE={grupos:{},upcoming:[],yesterday:[]};
 
@@ -1084,7 +1085,7 @@ function processFixtures(fixtures) {
   var todayEnd = new Date(todayStart); todayEnd.setDate(todayEnd.getDate()+1);
   var yestStart = new Date(todayStart); yestStart.setDate(yestStart.getDate()-1);
 
-  var grupos = {}, upcoming = [], yesterday = [];
+  var grupos = {}, upcoming = [], yesterday = [], tomorrow = [];
   var nextMatch = null;
 
   fixtures.forEach(function(m){
@@ -1114,8 +1115,7 @@ function processFixtures(fixtures) {
     // Tomorrow
     if (date >= todayEnd && date < tomorrowEnd && isUpcoming) {
       var parts2 = key.split('_');
-      if(!result.tomorrow) result.tomorrow = [];
-      result.tomorrow.push({key:key, home:m.teams.home.name, away:m.teams.away.name, date:date, g:parts2[0], i:parseInt(parts2[1])});
+      tomorrow.push({key:key, home:m.teams.home.name, away:m.teams.away.name, date:date, g:parts2[0], i:parseInt(parts2[1])});
     }
     // Yesterday finished
     if (date >= yestStart && date < todayStart && finished) {
@@ -1126,7 +1126,7 @@ function processFixtures(fixtures) {
 
   CACHE.nextMatchTime = nextMatch ? nextMatch.getTime() : null;
   API_GR_LIVE = grupos;
-  API_CACHE = {grupos:grupos, upcoming:upcoming, yesterday:yesterday, tomorrow:result.tomorrow||[]};
+  API_CACHE = {grupos:grupos, upcoming:upcoming, yesterday:yesterday, tomorrow:tomorrow};
 
   // Check if eliminatorias should be active
   checkEliActive(fixtures);
@@ -1157,6 +1157,9 @@ function checkEliActive(fixtures) {
 
   var now = new Date();
   ELI_ACTIVE = (now >= new Date(groupMatches[groupMatches.length-1] ? new Date(groupMatches.sort(function(a,b){return new Date(b.fixture.date)-new Date(a.fixture.date);})[0].fixture.date) : now)) && now < cutoff;
+
+  // ELI_STARTED: true once first R16 match has kicked off
+  ELI_STARTED = (new Date() >= firstR16);
 
   // Update UI
   var eliBtn = document.getElementById('nav-eli');
@@ -1594,6 +1597,20 @@ function showMatchDetail(g,i){
 }
 
 // ── Form steps ────────────────────────────────────────────
+function goStepGuard(n){
+  // Validate step 0 before allowing navigation to any step
+  var nom=normStr((document.getElementById('f-nom')||{}).value||'');
+  var ap=normStr((document.getElementById('f-ap')||{}).value||'');
+  if(!nom||!ap){
+    showToast('⚠️ Rellena tu nombre y apellidos primero');
+    goStep(0);
+    var en=document.getElementById('f-nom'); if(en&&!nom)en.classList.add('err');
+    var ea=document.getElementById('f-ap'); if(ea&&!ap)ea.classList.add('err');
+    return;
+  }
+  goStep(n);
+}
+
 function goStep(n){
   if(n===2&&!gruposBuilt){buildGruposForm();gruposBuilt=true;}
   if(n===4)buildConfirm();
@@ -1653,11 +1670,8 @@ function buildConfirm(){
   var ap=normStr((document.getElementById('f-ap')||{}).value||'');
   var full=(nom+' '+ap).trim()||'Sin nombre';
   var el=document.getElementById('cn-n'); if(el)el.textContent=displayName(full).toUpperCase();
-  var eb=document.getElementById('cn-b'); if(eb)eb.textContent='Mensaje Bizum: "Porra '+displayName(full)+'"';
-  var cg=document.getElementById('cn-g');
-  if(cg)cg.innerHTML='<div style="color:var(--t3)">MVP</div><div style="font-weight:600">'+((document.getElementById('f-mvp')||{}).value||'—')+'</div>'
-    +'<div style="color:var(--t3)">Goleador torneo</div><div style="font-weight:600">'+((document.getElementById('f-g1')||{}).value||'—')+' ('+((document.getElementById('f-g1n')||{}).value||'?')+' goles)</div>'
-    +'<div style="color:var(--t3)">Goleador España</div><div style="font-weight:600">'+((document.getElementById('f-g2')||{}).value||'—')+' ('+((document.getElementById('f-g2n')||{}).value||'?')+' goles)</div>';
+  var eb=document.getElementById('cn-b'); if(eb)eb.textContent='Concepto transferencia: "Porra '+displayName(full)+'"';
+  // Individual awards hidden from confirm
 }
 
 function submitPorra(){
@@ -1826,23 +1840,70 @@ function submitEliPorra(){
 }
 
 // ── Scoring ───────────────────────────────────────────────
+// Points per round: {pts for correct team, pts for correct score}
+var KO_PTS = {
+  c:   {team:5,  score:5},   // 16avos
+  oct: {team:10, score:10},  // octavos
+  qf:  {team:15, score:15},  // cuartos
+  sf:  {team:25, score:20},  // semis
+  fin2:{team:50, score:30},  // final (finalistas)
+  p3:  {team:30, score:15},  // 3er puesto
+};
+
 function calcPuntos(){
   var grRes=(typeof API_GR_LIVE!=='undefined')?API_GR_LIVE:{};
   var ind=(typeof API_IND!=='undefined')?API_IND:{};
+  // KO results — set by admin via API_IND or manual
+  var koRes=(typeof API_KO_LIVE!=='undefined')?API_KO_LIVE:{};
+
   PORRAS.forEach(function(p){
     var gPts=0,fPts=0,iPts=0;
+
+    // ── Grupos ──
     Object.keys(grRes).forEach(function(k){
       var res=grRes[k]; if(!res||res.h===undefined)return;
       var pred=p.gr&&p.gr[k]?p.gr[k]:''; if(!pred)return;
       var real=res.h>res.a?'1':res.h===res.a?'x':'2'; if(pred===real)gPts+=3;
     });
+
+    // ── Eliminatoria bracket ──
+    if(p.ko && Object.keys(p.ko).length){
+      Object.keys(p.ko).forEach(function(cid){
+        var pred=p.ko[cid]; if(!pred||!pred.winner)return;
+        var real=koRes[cid]; if(!real||!real.winner)return;
+        // Determine round prefix
+        var pfx=null;
+        if(cid.indexOf('fin2')===0)pfx='fin2';
+        else if(cid.indexOf('sf')===0)pfx='sf';
+        else if(cid.indexOf('qf')===0)pfx='qf';
+        else if(cid.indexOf('oct')===0)pfx='oct';
+        else if(cid.indexOf('c')===0)pfx='c';
+        if(!pfx||!KO_PTS[pfx])return;
+        var pts=KO_PTS[pfx];
+        if(namesMatch(real.winner,pred.winner)){
+          fPts+=pts.team;
+          // Score bonus
+          if(pts.score&&real.scoreH!==undefined&&real.scoreA!==undefined&&
+             pred.scoreH!==undefined&&pred.scoreA!==undefined&&
+             parseInt(real.scoreH)===parseInt(pred.scoreH)&&
+             parseInt(real.scoreA)===parseInt(pred.scoreA)){
+            fPts+=pts.score;
+          }
+        }
+      });
+    }
+
+    // ── Individuales ──
     if(namesMatch(ind.mvp,p.mvp))iPts+=20;
     if(namesMatch(ind.gol1,p.gol1)){iPts+=20;if(ind.gol1n&&parseInt(ind.gol1n)===p.gol1n)iPts+=15;}
     if(namesMatch(ind.gol2,p.gol2)){iPts+=15;if(ind.gol2n&&parseInt(ind.gol2n)===p.gol2n)iPts+=15;}
+
+    // ── Podio final ──
     if(namesMatch(ind.camp,p.camp))fPts+=50;
     if(namesMatch(ind.sub,p.sub))fPts+=30;
     if(namesMatch(ind.p3,p.p3))fPts+=30;
     if(namesMatch(ind.p4,p.p4))fPts+=15;
+
     p.pts={grupos:gPts,ff:fPts,indiv:iPts,total:gPts+fPts+iPts};
   });
 }
@@ -1980,7 +2041,7 @@ function downloadPDF(){
     doc.text('NFQ WORLD CUP 2026',105,18,{align:'center'});
     doc.setTextColor(240,247,242);doc.setFontSize(14);doc.text('PORRA OFICIAL — FASE DE GRUPOS',105,27,{align:'center'});
     doc.setFontSize(10);doc.setTextColor(139,168,152);
-    doc.text('Participante: '+full,20,40);doc.text('Bizum: "Porra '+full+'"',20,47);doc.text('Registrado: '+new Date(p.ts).toLocaleString('es-ES'),20,54);
+    doc.text('Participante: '+full,20,40);doc.text('Transferencia: "Porra '+full+'"',20,47);doc.text('Registrado: '+new Date(p.ts).toLocaleString('es-ES'),20,54);
     doc.setTextColor(0,192,115);doc.setFontSize(12);doc.text('PREMIOS INDIVIDUALES',20,66);
     doc.setTextColor(240,247,242);doc.setFontSize(9);
     doc.text('MVP: '+(p.mvp||'—'),20,73);doc.text('Goleador torneo: '+(p.gol1||'—')+' ('+p.gol1n+')',20,80);doc.text('Goleador Espana: '+(p.gol2||'—')+' ('+p.gol2n+')',20,87);
@@ -2078,7 +2139,7 @@ function renderAdmin(){
   if(pl)pl.innerHTML=PORRAS.length?PORRAS.map(function(p){
     var full=displayName(p.nombre+(p.apellidos?' '+p.apellidos:''));
     return '<div class="arow"><div><div style="font-weight:600;font-size:13px">'+full+'</div>'
-      +'<div style="font-size:11px;color:var(--t3)">Bizum: "Porra '+full+'" · '+new Date(p.ts).toLocaleDateString('es-ES')+'</div></div>'
+      +'<div style="font-size:11px;color:var(--t3)">Transferencia: "Porra '+full+'" · '+new Date(p.ts).toLocaleDateString('es-ES')+'</div></div>'
       +'<span class="sbg '+(p.active?'a':'p')+'">'+(p.active?'ACTIVO':'PENDIENTE')+'</span>'
       +'<button class="btn '+(p.active?'bdanger':'bgold')+' bsm" onclick="toggleActive('+p.id+')">'+(p.active?'Desactivar':'✓ Activar')+'</button>'
       +'<button class="btn bdanger bsm" onclick="deletePorra('+p.id+')" title="Eliminar definitivamente">🗑️</button>'
