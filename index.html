@@ -310,7 +310,18 @@ footer span{color:var(--g)}
 .d3{opacity:0;animation-delay:.27s}.d4{opacity:0;animation-delay:.37s}
 
 .rkh,.rkr{grid-template-columns:38px 1fr 62px 62px 62px 82px 74px}
-.mbtn-wrap{display:flex;gap:5px}.mbtn{background:var(--s2);border:1px solid var(--bd);color:var(--t2);font-family:var(--fm);font-size:12px;font-weight:700;padding:7px 14px;border-radius:var(--r);cursor:pointer;transition:.15s;min-width:40px;text-align:center}.mbtn:hover{border-color:var(--g);color:var(--g)}.mbtn.sel1{background:var(--g);border-color:var(--g);color:#000}.mbtn.selx{background:var(--gold);border-color:var(--gold);color:#000}.mbtn.sel2{background:var(--blue);border-color:var(--blue);color:#fff}.mrow{display:grid;grid-template-columns:1fr auto 1fr auto;align-items:center;gap:8px;padding:9px 0;border-bottom:1px solid var(--bd2)}.mrow:last-child{border-bottom:none}
+.mbtn-wrap{display:flex;gap:4px}
+.mbtn{background:var(--s2);border:1px solid var(--bd);color:var(--t2);font-family:var(--fm);font-size:12px;font-weight:700;padding:6px 12px;border-radius:var(--r);cursor:pointer;transition:.15s;min-width:36px;text-align:center}
+.mbtn:hover{border-color:var(--g);color:var(--g)}
+.mbtn.sel1{background:var(--g);border-color:var(--g);color:#000}
+.mbtn.selx{background:var(--gold);border-color:var(--gold);color:#000}
+.mbtn.sel2{background:var(--blue);border-color:var(--blue);color:#fff}
+.mrow{display:flex;align-items:center;gap:0;padding:7px 0;border-bottom:1px solid var(--bd2)}
+.mrow:last-child{border-bottom:none}
+.mt2{flex:1;font-size:12px;font-weight:700;letter-spacing:.3px;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mt2.r{text-align:right}
+.mvs-mid{display:flex;align-items:center;gap:6px;padding:0 8px;flex-shrink:0}
+.mflg{font-size:16px;line-height:1}
 </style>
 </head>
 <body>
@@ -490,7 +501,7 @@ footer span{color:var(--g)}
                 <div style="font-family:var(--fd);font-size:24px;letter-spacing:2px;color:var(--t2);margin-bottom:12px">FASE ELIMINATORIA</div>
                 <div style="background:var(--s2);border:1px solid var(--bd);border-radius:var(--rl);padding:20px 24px;max-width:440px;margin:0 auto 24px;text-align:left">
                   <div style="font-family:var(--fm);font-size:10px;letter-spacing:3px;color:var(--gold);margin-bottom:10px;text-align:center">PENDIENTE DE HABILITARSE</div>
-                  <div style="font-size:14px;color:var(--t2);line-height:1.7">Los cruces de dieciseisavos se conocerán cuando terminen los grupos. Cuando estén definidos podrás volver a la web para completar tu bracket de eliminatorias antes del primer partido.</div>
+                  <div style="font-size:14px;color:var(--t2);line-height:1.7">Esta sección se podrá completar cuando acaben los partidos de grupos y los cruces de las eliminatorias estén definidos. Se avisará cuando esté disponible y podrás completarla hasta 5 minutos antes de que empiece el primer partido de dieciseisavos.</div>
                 </div>
                 <div style="font-size:12px;color:var(--t3)">Puedes continuar y finalizar tu inscripción ahora.</div>
               </div>
@@ -723,6 +734,21 @@ footer span{color:var(--g)}
       </div>
       <div style="font-family:var(--fd);font-size:17px;letter-spacing:1px;margin-bottom:10px;color:var(--g)">PARTICIPANTES</div>
       <div class="asec" id="adm-parts"></div>
+      <div style="font-family:var(--fd);font-size:17px;letter-spacing:1px;margin:20px 0 6px;color:var(--g)">RESULTADOS MANUALES</div>
+      <div style="font-size:12px;color:var(--t3);margin-bottom:10px">Solo si la API falla. Introduce el resultado de un partido manualmente.</div>
+      <div class="card" style="padding:14px 16px;margin-bottom:16px">
+        <div style="display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:center;margin-bottom:10px">
+          <input class="fi" id="adm-res-key" placeholder="Clave partido (ej: H_0)" style="font-family:var(--fm);font-size:12px"/>
+          <div style="display:flex;align-items:center;gap:6px">
+            <input class="fi" id="adm-res-h" type="number" min="0" max="20" placeholder="0" style="width:52px;text-align:center"/>
+            <span style="color:var(--t3)">:</span>
+            <input class="fi" id="adm-res-a" type="number" min="0" max="20" placeholder="0" style="width:52px;text-align:center"/>
+          </div>
+          <button class="btn bgold bsm" onclick="addManualResult()">Guardar resultado</button>
+        </div>
+        <div style="font-size:11px;color:var(--t3)">Formato clave: letra del grupo + _ + número de partido (0-5). Ej: H_0 = primer partido del grupo H (España)</div>
+        <div id="adm-manual-results" style="margin-top:10px;font-size:12px;color:var(--t2)"></div>
+      </div>
       <div style="font-family:var(--fd);font-size:17px;letter-spacing:1px;margin:20px 0 10px;color:var(--g)">EL VESTUARIO</div>
       <div class="asec" id="adm-posts"></div>
     </div>
@@ -731,6 +757,20 @@ footer span{color:var(--g)}
 
 <footer><p>⚽ NFQ World Cup Porra 2026 · <span>USA · México · Canadá</span> · 11 jun – 19 jul 2026</p></footer>
 <script>
+var FLAGS = {
+  'España':'🇪🇸','Francia':'🇫🇷','Brasil':'🇧🇷','Alemania':'🇩🇪','Argentina':'🇦🇷',
+  'Portugal':'🇵🇹','Inglaterra':'🏴󠁧󠁢󠁥󠁮󠁧󠁿','Bélgica':'🇧🇪','Holanda':'🇳🇱','Croacia':'🇭🇷',
+  'Uruguay':'🇺🇾','Colombia':'🇨🇴','Turquía':'🇹🇷','Suecia':'🇸🇪','Suiza':'🇨🇭',
+  'Austria':'🇦🇹','Noruega':'🇳🇴','Corea del Sur':'🇰🇷','Japón':'🇯🇵','México':'🇲🇽',
+  'Canadá':'🇨🇦','Ecuador':'🇪🇨','Paraguay':'🇵🇾','Marruecos':'🇲🇦','Senegal':'🇸🇳',
+  'Túnez':'🇹🇳','C.Marfil':'🇨🇮','Egipto':'🇪🇬','Sudáfrica':'🇿🇦','Ghana':'🇬🇭',
+  'Arabia Saudita':'🇸🇦','Irán':'🇮🇷','Argelia':'🇩🇿','Jordania':'🇯🇴','Qatar':'🇶🇦',
+  'Panamá':'🇵🇦','N.Zelanda':'🇳🇿','Bosnia':'🇧🇦','Chequia':'🇨🇿','Cabo Verde':'🇨🇻',
+  'Curazao':'🇨🇼','Congo':'🇨🇩','Uzbekistán':'🇺🇿','Haití':'🇭🇹','Escocia':'🏴󠁧󠁢󠁳󠁣󠁴󠁿',
+  'EE.UU.':'🇺🇸','Australia':'🇦🇺'
+};
+function flag(team){ return FLAGS[team]||'🏳️'; }
+
 var MUNDIAL_STARTED=(Date.now()>=new Date('2026-06-11T19:00:00Z').getTime());
 var ELI_ACTIVE=false;
 var ELI_STARTED=false;
@@ -1030,10 +1070,19 @@ function processFixtures(fixtures) {
       };
     }
     // Today upcoming
-    if (date >= todayStart && date < todayEnd && !finished && st!=='1H'&&st!=='HT'&&st!=='2H') {
+    var tomorrowStart = new Date(todayEnd); tomorrowStart.setDate(tomorrowStart.getDate());
+    var tomorrowEnd = new Date(tomorrowStart); tomorrowEnd.setDate(tomorrowEnd.getDate()+1);
+    var isUpcoming = !finished && st!=='1H'&&st!=='HT'&&st!=='2H'&&st!=='ET'&&st!=='BT'&&st!=='P';
+    if (date >= todayStart && date < todayEnd && isUpcoming) {
       if (!nextMatch || date < nextMatch) nextMatch = date;
       var parts = key.split('_');
       upcoming.push({key:key, home:m.teams.home.name, away:m.teams.away.name, date:date, g:parts[0], i:parseInt(parts[1])});
+    }
+    // Tomorrow
+    if (date >= todayEnd && date < tomorrowEnd && isUpcoming) {
+      var parts2 = key.split('_');
+      if(!result.tomorrow) result.tomorrow = [];
+      result.tomorrow.push({key:key, home:m.teams.home.name, away:m.teams.away.name, date:date, g:parts2[0], i:parseInt(parts2[1])});
     }
     // Yesterday finished
     if (date >= yestStart && date < todayStart && finished) {
@@ -1044,7 +1093,7 @@ function processFixtures(fixtures) {
 
   CACHE.nextMatchTime = nextMatch ? nextMatch.getTime() : null;
   API_GR_LIVE = grupos;
-  API_CACHE = {grupos:grupos, upcoming:upcoming, yesterday:yesterday};
+  API_CACHE = {grupos:grupos, upcoming:upcoming, yesterday:yesterday, tomorrow:result.tomorrow||[]};
 
   // Check if eliminatorias should be active
   checkEliActive(fixtures);
@@ -1378,7 +1427,35 @@ function renderHomeLive(){
     var spTime=String(spH).padStart(2,'0')+':'+String(m.date.getUTCMinutes()).padStart(2,'0')+' (España)';
     todayHtml+=buildMatchCard(m.home,m.away,null,null,'soon',spTime,[],null,m.g,m.i);
   });
-  todayEl.innerHTML=todayHtml||'<div style="padding:14px;font-size:13px;color:var(--t3)">Sin más partidos hoy</div>';
+  // If no matches today, show tomorrow's
+  if(!todayHtml){
+    var tmrw=(typeof API_CACHE!=='undefined'&&API_CACHE.tomorrow)||[];
+    if(tmrw.length){
+      var tmrwHtml='<div style="font-size:11px;color:var(--t3);margin-bottom:8px;font-family:var(--fm);letter-spacing:1px">MAÑANA</div>';
+      tmrw.forEach(function(m){
+        var spH=(m.date.getUTCHours()+2)%24;
+        var spTime=String(spH).padStart(2,'0')+':'+String(m.date.getUTCMinutes()).padStart(2,'0')+' (España)';
+        tmrwHtml+=buildMatchCard(m.home,m.away,null,null,'soon',spTime,[],null,m.g,m.i);
+      });
+      todayEl.innerHTML=tmrwHtml;
+    } else {
+      todayEl.innerHTML='<div style="padding:14px;font-size:13px;color:var(--t3)">Sin partidos próximos</div>';
+    }
+  } else {
+    todayEl.innerHTML=todayHtml;
+    // Append tomorrow if exists
+    var tmrw2=(typeof API_CACHE!=='undefined'&&API_CACHE.tomorrow)||[];
+    if(tmrw2.length){
+      var tmrwHdr='<div style="font-size:11px;color:var(--t3);margin:12px 0 8px;font-family:var(--fm);letter-spacing:1px">MAÑANA</div>';
+      var tmrwHtml2='';
+      tmrw2.forEach(function(m){
+        var spH=(m.date.getUTCHours()+2)%24;
+        var spTime=String(spH).padStart(2,'0')+':'+String(m.date.getUTCMinutes()).padStart(2,'0');
+        tmrwHtml2+=buildMatchCard(m.home,m.away,null,null,'soon',spTime+' (España)',[],null,m.g,m.i);
+      });
+      todayEl.innerHTML+=tmrwHdr+tmrwHtml2;
+    }
+  }
   var yesterday=(typeof API_CACHE!=='undefined'&&API_CACHE.yesterday)||[];
   var ayerHtml='';
   yesterday.forEach(function(m){ayerHtml+=buildMatchCard(m.home,m.away,m.h,m.a,'done','',m.goals,calcPct(m.g,m.i),m.g,m.i);});
@@ -1508,15 +1585,17 @@ function buildGruposForm(){
     html+='<div class="ghdr">GRUPO '+g+' — '+data.t.join(' · ')+'</div><div class="mgg">';
     data.m.forEach(function(m,i){
       var fid="fg_"+g+"_"+i;
+      var fh=flag(m.h), fa=flag(m.a);
       html+='<div class="mrow">'
-        +'<div class="mt2">'+m.h+'</div>'
-        +'<div class="mvs">vs</div>'
-        +'<div class="mt2 r">'+m.a+'</div>'
-        +'<div class="mbtn-wrap">'
-        +'<button class="mbtn" id="'+fid+'_1" onclick="selMatch(this,\''+fid+'\',\'1\')">1</button>'
-        +'<button class="mbtn" id="'+fid+'_x" onclick="selMatch(this,\''+fid+'\',\'x\')">X</button>'
-        +'<button class="mbtn" id="'+fid+'_2" onclick="selMatch(this,\''+fid+'\',\'2\')">2</button>'
+        +'<div class="mt2">'+fh+' '+m.h.toUpperCase()+'</div>'
+        +'<div class="mvs-mid">'
+          +'<div class="mbtn-wrap">'
+            +'<button class="mbtn" id="'+fid+'_1" onclick="selMatch(this,\''+fid+'\',\'1\')">1</button>'
+            +'<button class="mbtn" id="'+fid+'_x" onclick="selMatch(this,\''+fid+'\',\'x\')">X</button>'
+            +'<button class="mbtn" id="'+fid+'_2" onclick="selMatch(this,\''+fid+'\',\'2\')">2</button>'
+          +'</div>'
         +'</div>'
+        +'<div class="mt2 r">'+m.a.toUpperCase()+' '+fa+'</div>'
         +'<input type="hidden" id="'+fid+'" value=""/>'
         +'</div>';
     });
@@ -1524,6 +1603,7 @@ function buildGruposForm(){
   });
   cont.innerHTML=html;
 }
+
 function selMatch(btn,fid,val){
   var h=document.getElementById(fid); if(h)h.value=val;
   btn.parentElement.querySelectorAll(".mbtn").forEach(function(b){b.className="mbtn";});
@@ -1962,6 +2042,7 @@ function renderAdmin(){
       +'<div style="font-size:11px;color:var(--t3)">Bizum: "Porra '+full+'" · '+new Date(p.ts).toLocaleDateString('es-ES')+'</div></div>'
       +'<span class="sbg '+(p.active?'a':'p')+'">'+(p.active?'ACTIVO':'PENDIENTE')+'</span>'
       +'<button class="btn '+(p.active?'bdanger':'bgold')+' bsm" onclick="toggleActive('+p.id+')">'+(p.active?'Desactivar':'✓ Activar')+'</button>'
+      +'<button class="btn bdanger bsm" onclick="deletePorra('+p.id+')" title="Eliminar definitivamente">🗑️</button>'
     +'</div>';
   }).join(''):'<div style="padding:16px;text-align:center;font-size:13px;color:var(--t3)">Sin participantes</div>';
   var poEl=document.getElementById('adm-posts');
@@ -1981,6 +2062,39 @@ function toggleActive(id){
   showToast(p.active?'✅ '+displayName(p.nombre)+' activado':'❌ Desactivado');
 }
 function delPostAdmin(id){ sbDeletePost(id).then(function(){renderAdmin();showToast('Eliminado');}); }
+function addManualResult(){
+  var key=(document.getElementById('adm-res-key')||{}).value||'';
+  var h=document.getElementById('adm-res-h');
+  var a=document.getElementById('adm-res-a');
+  key=key.trim().toUpperCase();
+  if(!key||h.value===''||a.value===''){showToast('⚠️ Rellena la clave y el resultado');return;}
+  // Validate key format
+  if(!/^[A-L]_[0-5]$/.test(key)){showToast('⚠️ Formato incorrecto. Ej: H_0');return;}
+  var hv=parseInt(h.value), av=parseInt(a.value);
+  API_GR_LIVE[key]={h:hv,a:av,goals:[]};
+  calcPuntos(); renderRanking();
+  // Show in admin
+  var el=document.getElementById('adm-manual-results');
+  if(el){
+    var existing=el.innerHTML;
+    el.innerHTML=existing+'<div style="padding:4px 0;border-bottom:1px solid var(--bd2)">✅ <strong>'+key+'</strong>: '+hv+' - '+av+'</div>';
+  }
+  // Clear inputs
+  document.getElementById('adm-res-key').value='';
+  h.value=''; a.value='';
+  showToast('✅ Resultado '+key+' guardado: '+hv+'-'+av);
+  resultsBuilt=false; buildResults();
+}
+function deletePorra(id){
+  var p=PORRAS.find(function(x){return x.id===id;}); if(!p)return;
+  var full=displayName(p.nombre+(p.apellidos?' '+p.apellidos:''));
+  if(!confirm('¿Eliminar definitivamente a '+full+'? Esta acción no se puede deshacer.'))return;
+  sbDeletePorra(id).then(function(){
+    PORRAS=PORRAS.filter(function(x){return x.id!==id;});
+    calcPuntos(); renderAdmin(); renderRanking(); updateBote();
+    showToast('🗑️ '+full+' eliminado');
+  }).catch(function(e){console.error(e);showToast('Error al eliminar');});
+}
 
 // ── Vestuario ─────────────────────────────────────────────
 function publishPost(){
