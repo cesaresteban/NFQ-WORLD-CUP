@@ -735,7 +735,7 @@ footer span{color:var(--g)}
       <div style="font-family:var(--fd);font-size:17px;letter-spacing:1px;margin-bottom:10px;color:var(--g)">PARTICIPANTES</div>
       <div class="asec" id="adm-parts"></div>
       <div style="font-family:var(--fd);font-size:17px;letter-spacing:1px;margin:20px 0 6px;color:var(--g)">RESULTADOS MANUALES</div>
-      <div style="font-size:12px;color:var(--t3);margin-bottom:10px">Entra en <strong style="color:var(--g)">Resultados</strong> y pulsa ✏️ en cada partido para editarlo directamente. También puedes usar el formulario rápido aquí abajo.</div>
+      <div style="font-size:12px;color:var(--t3);margin-bottom:10px">Solo si la API falla. Introduce el resultado de un partido manualmente.</div>
       <div class="card" style="padding:14px 16px;margin-bottom:16px">
         <div style="display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:center;margin-bottom:10px">
           <input class="fi" id="adm-res-key" placeholder="Clave partido (ej: H_0)" style="font-family:var(--fm);font-size:12px"/>
@@ -757,61 +757,6 @@ footer span{color:var(--g)}
 
 <footer><p>⚽ NFQ World Cup Porra 2026 · <span>USA · México · Canadá</span> · 11 jun – 19 jul 2026</p></footer>
 <script>
-
-var TEAM_FLAGS = {
-  'España':'es',
-  'Francia':'fr',
-  'Brasil':'br',
-  'Alemania':'de',
-  'Argentina':'ar',
-  'Portugal':'pt',
-  'Inglaterra':'gb-eng',
-  'Bélgica':'be',
-  'Holanda':'nl',
-  'Croacia':'hr',
-  'Uruguay':'uy',
-  'Colombia':'co',
-  'Turquía':'tr',
-  'Suecia':'se',
-  'Suiza':'ch',
-  'Austria':'at',
-  'Noruega':'no',
-  'Corea del Sur':'kr',
-  'Japón':'jp',
-  'México':'mx',
-  'Canadá':'ca',
-  'Ecuador':'ec',
-  'Paraguay':'py',
-  'Marruecos':'ma',
-  'Senegal':'sn',
-  'Túnez':'tn',
-  'C.Marfil':'ci',
-  'Egipto':'eg',
-  'Sudáfrica':'za',
-  'Ghana':'gh',
-  'Arabia Saudita':'sa',
-  'Irán':'ir',
-  'Argelia':'dz',
-  'Jordania':'jo',
-  'Qatar':'qa',
-  'Panamá':'pa',
-  'N.Zelanda':'nz',
-  'Bosnia':'ba',
-  'Chequia':'cz',
-  'Cabo Verde':'cv',
-  'Curazao':'cw',
-  'Congo':'cd',
-  'Uzbekistán':'uz',
-  'Haití':'ht',
-  'Escocia':'gb-sct',
-  'EE.UU.':'us',
-  'Australia':'au',
-  'Irak':'iq',
-};
-function flagImg(team){
-  var code=TEAM_FLAGS[team]||'un';
-  return '<img src="https://flagcdn.com/20x15/'+code+'.png" style="width:20px;height:15px;object-fit:cover;border-radius:2px;vertical-align:middle;margin-right:5px" onerror="this.style.display=\'none\'"/>';
-}
 
 var MUNDIAL_STARTED=(Date.now()>=new Date('2026-06-11T19:00:00Z').getTime());
 var ELI_ACTIVE=false;
@@ -1288,8 +1233,8 @@ function scheduleRefresh() {
 // NFQ WORLD CUP 2026 — MAIN JS v5 FINAL
 // ═══════════════════════════════════════════════════════════
 
-var ADM_TOKEN   = null; // set
-var ADM_LOGGED      = false; on Supabase Auth login
+var ADM_TOKEN   = null; // set on Supabase Auth login
+var ADM_LOGGED  = false;
 var prevRk      = [];
 var koState     = {};
 var eliPorraId  = null;
@@ -1561,7 +1506,8 @@ function buildResults(){
       var scHtml=isLive?'<div style="font-family:var(--fd);font-size:18px;color:var(--red)">'+API_LIVE_DATA.h+':'+API_LIVE_DATA.a+'</div>'
         :res?'<div class="scb">'+res.h+'</div><span class="scsep">:</span><div class="scb">'+res.a+'</div>'
         :'<div class="scb" style="color:var(--t3)">—</div><span class="scsep">:</span><div class="scb" style="color:var(--t3)">—</div>';
-      html+='<div class="mrr" onclick="showMatchDetail(\''+g+'\',\''+i+'\')"><div class="mrt">'+m.h+'</div><div class="mrsc">'+scHtml+'</div><div class="mrt r">'+m.a+'</div><div class="detbtn">'+(isLive?'<span class="liveb"><span class="livd"></span>LIVE</span>':'Ver →')+'</div></div>';
+      var eBtn=ADM_LOGGED?'<button class="mbtn" style="font-size:10px;padding:3px 8px;margin-left:6px" onclick="event.stopPropagation();editResult(\''+k+'\',\''+m.h+'\',\''+m.a+'\')">✏️</button>':'';
+      html+='<div class="mrr" onclick="showMatchDetail(\''+g+'\',\''+i+'\')"><div class="mrt">'+m.h+'</div><div class="mrsc">'+scHtml+'</div><div class="mrt r">'+m.a+'</div><div class="detbtn" style="display:flex;align-items:center">'+(isLive?'<span class="liveb"><span class="livd"></span>LIVE</span>':'Ver →')+eBtn+'</div></div>';
     });
     html+='</div>';
   });
@@ -1629,7 +1575,7 @@ function buildGruposForm(){
     data.m.forEach(function(m,i){
       var fid="fg_"+g+"_"+i;
       html+='<div class="mrow">'
-        +'<div class="mt2">'+flagImg(m.h)+m.h.toUpperCase()+'</div>'
+        +'<div class="mt2">'+m.h.toUpperCase()+'</div>'
         +'<div class="mvs-mid">'
           +'<div class="mbtn-wrap">'
             +'<button class="mbtn" id="'+fid+'_1" onclick="selMatch(this,\''+fid+'\',\'1\')">1</button>'
@@ -1637,7 +1583,7 @@ function buildGruposForm(){
             +'<button class="mbtn" id="'+fid+'_2" onclick="selMatch(this,\''+fid+'\',\'2\')">2</button>'
           +'</div>'
         +'</div>'
-        +'<div class="mt2 r">'+m.a.toUpperCase()+flagImg(m.a)+'</div>'
+        +'<div class="mt2 r">'+m.a.toUpperCase()+'</div>'
         +'<input type="hidden" id="'+fid+'" value=""/>'
         +'</div>';
     });
@@ -2105,45 +2051,6 @@ function toggleActive(id){
   showToast(p.active?'✅ '+displayName(p.nombre)+' activado':'❌ Desactivado');
 }
 function delPostAdmin(id){ sbDeletePost(id).then(function(){renderAdmin();showToast('Eliminado');}); }
-function editResult(key, homeTeam, awayTeam){
-  // Create inline edit modal
-  var existing = API_GR_LIVE[key];
-  var ch = existing ? existing.h : '';
-  var ca = existing ? existing.a : '';
-  var modal = document.createElement('div');
-  modal.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;z-index:9999';
-  modal.innerHTML='<div style="background:var(--s1);border:1px solid var(--bd);border-radius:var(--rl);padding:24px;max-width:380px;width:90%;text-align:center">'
-    +'<div style="font-family:var(--fd);font-size:18px;letter-spacing:1px;margin-bottom:16px;color:var(--g)">EDITAR RESULTADO</div>'
-    +'<div style="display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px;margin-bottom:20px">'
-      +'<div style="font-size:13px;font-weight:700">'+homeTeam+'</div>'
-      +'<div style="display:flex;align-items:center;gap:8px">'
-        +'<input id="edit-h" type="number" min="0" max="20" value="'+ch+'" placeholder="0" style="width:50px;text-align:center;font-family:var(--fd);font-size:24px;background:var(--s2);border:1px solid var(--bd);border-radius:var(--r);color:var(--t1);padding:8px"/>'
-        +'<span style="font-family:var(--fd);font-size:24px;color:var(--t3)">:</span>'
-        +'<input id="edit-a" type="number" min="0" max="20" value="'+ca+'" placeholder="0" style="width:50px;text-align:center;font-family:var(--fd);font-size:24px;background:var(--s2);border:1px solid var(--bd);border-radius:var(--r);color:var(--t1);padding:8px"/>'
-      +'</div>'
-      +'<div style="font-size:13px;font-weight:700">'+awayTeam+'</div>'
-    +'</div>'
-    +'<div style="display:flex;gap:10px;justify-content:center">'
-      +'<button onclick="this.closest('div[style*=fixed]').remove()" style="background:var(--s2);border:1px solid var(--bd);color:var(--t2);padding:9px 20px;border-radius:var(--r);cursor:pointer;font-size:13px">Cancelar</button>'
-      +'<button onclick="saveEditResult(''+key+'',this)" style="background:var(--g);border:none;color:#000;padding:9px 20px;border-radius:var(--r);cursor:pointer;font-size:13px;font-weight:700">✅ Guardar</button>'
-    +'</div>'
-  +'</div>';
-  document.body.appendChild(modal);
-  modal.querySelector('#edit-h').focus();
-}
-
-function saveEditResult(key, btn){
-  var modal = btn.closest('div[style*="fixed"]');
-  var h = parseInt(modal.querySelector('#edit-h').value);
-  var a = parseInt(modal.querySelector('#edit-a').value);
-  if(isNaN(h)||isNaN(a)){showToast('⚠️ Introduce ambos marcadores');return;}
-  API_GR_LIVE[key]={h:h,a:a,goals:(API_GR_LIVE[key]&&API_GR_LIVE[key].goals)||[]};
-  modal.remove();
-  calcPuntos(); renderRanking();
-  resultsBuilt=false; buildResults();
-  showToast('✅ Resultado '+key+' actualizado: '+h+'-'+a);
-}
-
 function addManualResult(){
   var key=(document.getElementById('adm-res-key')||{}).value||'';
   var h=document.getElementById('adm-res-h');
@@ -2205,6 +2112,42 @@ function votePost(id,dir){
   if(prev===dir){if(dir==='up')upD=-1;else downD=-1;LOCAL_VOTES[id]=null;}
   else{if(prev==='up')upD--;else if(prev==='down')downD--;if(dir==='up')upD++;else downD++;LOCAL_VOTES[id]=dir;}
   saveVotes(); sbVotePost(id,upD,downD);
+}
+
+function editResult(key, homeTeam, awayTeam){
+  var existing=API_GR_LIVE[key];
+  var ch=existing?existing.h:'';
+  var ca=existing?existing.a:'';
+  var modal=document.createElement('div');
+  modal.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.75);display:flex;align-items:center;justify-content:center;z-index:9999';
+  var inner=document.createElement('div');
+  inner.style.cssText='background:#0d1a0f;border:1px solid #1a4a2e;border-radius:16px;padding:28px 24px;max-width:360px;width:90%;text-align:center';
+  inner.innerHTML=
+    '<div style="font-family:Bebas Neue,sans-serif;font-size:18px;letter-spacing:2px;color:#00c073;margin-bottom:14px">EDITAR RESULTADO</div>'
+    +'<div style="font-size:13px;font-weight:700;color:#f0f7f2;margin-bottom:16px">'+homeTeam+' vs '+awayTeam+'</div>'
+    +'<div style="display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:20px">'
+      +'<input id="er-h" type="number" min="0" max="20" value="'+ch+'" style="width:58px;text-align:center;font-size:26px;font-family:Space Mono,monospace;background:#1a2e20;border:1px solid #2a4a30;border-radius:8px;color:#f0f7f2;padding:8px"/>'
+      +'<span style="font-size:26px;color:#526b5e">:</span>'
+      +'<input id="er-a" type="number" min="0" max="20" value="'+ca+'" style="width:58px;text-align:center;font-size:26px;font-family:Space Mono,monospace;background:#1a2e20;border:1px solid #2a4a30;border-radius:8px;color:#f0f7f2;padding:8px"/>'
+    +'</div>'
+    +'<div style="display:flex;gap:10px;justify-content:center">'
+      +'<button id="er-cancel" style="background:#1a2e20;border:1px solid #2a4a30;color:#8ba898;padding:9px 20px;border-radius:8px;cursor:pointer;font-size:13px">Cancelar</button>'
+      +'<button id="er-save" style="background:#00c073;border:none;color:#000;padding:9px 22px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:700">Guardar</button>'
+    +'</div>';
+  modal.appendChild(inner);
+  document.body.appendChild(modal);
+  document.getElementById('er-h').focus();
+  document.getElementById('er-cancel').onclick=function(){modal.remove();};
+  document.getElementById('er-save').onclick=function(){
+    var h=parseInt(document.getElementById('er-h').value);
+    var a=parseInt(document.getElementById('er-a').value);
+    if(isNaN(h)||isNaN(a)){showToast('⚠️ Introduce ambos marcadores');return;}
+    API_GR_LIVE[key]={h:h,a:a,goals:(API_GR_LIVE[key]&&API_GR_LIVE[key].goals)||[]};
+    modal.remove();
+    calcPuntos(); renderRanking();
+    resultsBuilt=false; buildResults();
+    showToast('✅ '+key+': '+h+'-'+a);
+  };
 }
 
 (function init(){loadPorras();loadPosts();initHome();buildResults();handleHash();if(!MUNDIAL_STARTED){setInterval(updateCD,1000);updateCD();}else{refreshAll();scheduleRefresh();}setTimeout(function(){setupSearch('f-mvp',WORLD_PLAYERS);setupSearch('f-g1',WORLD_PLAYERS);setupSearch('f-g2',SPAIN_PLAYERS);},400);})();
