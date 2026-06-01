@@ -443,10 +443,10 @@ footer span{color:var(--g)}
             <div class="fstep on" id="fs0">
               <div class="sec-title">Datos personales</div>
               <div class="fg2">
-                <div class="ff"><label>Nombre *</label><input class="fi" id="f-nom" placeholder="Tu nombre"/></div>
-                <div class="ff"><label>Apellidos *</label><input class="fi" id="f-ap" placeholder="Tus apellidos"/></div>
+                <div class="ff"><label>Nombre * <span style="font-size:10px;color:var(--t3);font-weight:400">(como en el chat de NFQ)</span></label><input class="fi" id="f-nom" placeholder="Nombre (como en el chat de NFQ)"/></div>
+                <div class="ff"><label>Apellidos * <span style="font-size:10px;color:var(--t3);font-weight:400">(como en el chat de NFQ)</span></label><input class="fi" id="f-ap" placeholder="Apellidos (como en el chat de NFQ)"/></div>
               </div>
-              <div style="font-size:11px;color:var(--t3);margin-top:-4px;margin-bottom:4px">El mensaje del Bizum será: "Porra Nombre Apellidos"</div>
+              <div style="font-size:11px;color:var(--t3);margin-top:-4px;margin-bottom:4px">El concepto de la transferencia será: "Porra Nombre Apellidos"</div>
               <div class="bnav" style="margin-top:16px">
                 <button class="btn bp bsm" onclick="validateStep0()">Siguiente: Premios individuales →</button>
               </div>
@@ -531,14 +531,15 @@ footer span{color:var(--g)}
               <div class="spl">
                 <div style="font-size:36px;margin-bottom:6px">💶</div>
                 <div style="font-family:var(--fd);font-size:22px;letter-spacing:1px;margin-bottom:4px">¡YA CASI ESTÁS!</div>
-                <div style="font-size:13px;color:var(--t2);max-width:380px;margin:0 auto 14px;line-height:1.7">Tu porra está registrada pero <strong style="color:var(--t1)">no eres válido hasta que pagues</strong>. Haz el Bizum antes del <strong style="color:var(--g)">10 de junio</strong>.</div>
+                <div style="font-size:13px;color:var(--t2);max-width:380px;margin:0 auto 14px;line-height:1.7">Tu porra está registrada pero <strong style="color:var(--t1)">no eres válido hasta que pagues</strong>. Realiza la transferencia antes del <strong style="color:var(--g)">10 de junio</strong>.</div>
                 <div style="background:rgba(232,41,58,.08);border:1px solid rgba(232,41,58,.2);border-radius:var(--r);padding:10px 16px;font-size:13px;color:var(--red);margin:0 auto 18px;max-width:380px">⚠️ Sin pago no saldrás en el ranking ni optarás a premios.</div>
                 <div style="font-family:var(--fd);font-size:80px;color:var(--g);line-height:1;margin:12px 0 6px">10€</div>
-                <div style="font-size:12px;color:var(--t3);margin-bottom:6px">Bizum al número (toca para copiar)</div>
-                <div class="spph" onclick="copyText('608943624','Número copiado')">608 943 624</div>
-                <div style="font-size:12px;color:var(--t3);margin:12px 0 6px">Con el mensaje (toca para copiar)</div>
+                <div style="font-size:12px;color:var(--t3);margin-bottom:8px">Transferencia bancaria (toca para copiar el IBAN)</div>
+                <div class="spph" id="iban-display" onclick="copyIBAN()">Cargando...</div>
+                <div style="font-size:12px;color:var(--t3);margin:12px 0 6px">Con el concepto (toca para copiar)</div>
                 <div class="spmsg" id="sp-msg" onclick="copyText(document.getElementById('sp-msg').dataset.msg,'Mensaje copiado')">Porra —</div>
-                <div style="font-size:11px;color:var(--t3);margin-bottom:20px">Toca para copiar</div>
+                <div style="font-size:11px;color:var(--t3);margin-bottom:14px">Toca para copiar</div>
+                <div style="font-size:12px;color:var(--t3);margin-bottom:20px;max-width:380px;margin-left:auto;margin-right:auto;line-height:1.6">Una vez confirmado el pago, serás añadido al grupo de NFQ de la porra para recibir notificaciones.</div>
                 <button class="btn bg bsm" onclick="goPage('ranking')">Ver ranking →</button>
               </div>
             </div>
@@ -748,6 +749,26 @@ footer span{color:var(--g)}
         </div>
         <div style="font-size:11px;color:var(--t3)">Formato clave: letra del grupo + _ + número de partido (0-5). Ej: H_0 = primer partido del grupo H (España)</div>
         <div id="adm-manual-results" style="margin-top:10px;font-size:12px;color:var(--t2)"></div>
+      </div>
+      <div style="font-family:var(--fd);font-size:17px;letter-spacing:1px;margin:20px 0 6px;color:var(--g)">PREMIOS INDIVIDUALES</div>
+      <div style="font-size:12px;color:var(--t3);margin-bottom:10px">Solo si la API no los trae automáticamente. Al guardar recalcula los puntos de todos.</div>
+      <div class="card" style="padding:14px 16px;margin-bottom:16px">
+        <div style="display:grid;gap:10px">
+          <div style="display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center">
+            <input class="fi" id="adm-mvp" placeholder="MVP (nombre jugador)" style="font-size:13px"/>
+            <button class="btn bgold bsm" onclick="saveIndividual()">Guardar todo</button>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 80px;gap:8px">
+            <input class="fi" id="adm-gol1" placeholder="Goleador torneo (nombre)"/>
+            <input class="fi" id="adm-gol1n" type="number" min="0" max="30" placeholder="Goles" style="text-align:center"/>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 80px;gap:8px">
+            <input class="fi" id="adm-gol2" placeholder="Goleador España (nombre)"/>
+            <input class="fi" id="adm-gol2n" type="number" min="0" max="30" placeholder="Goles" style="text-align:center"/>
+          </div>
+          <div style="font-size:10px;color:var(--t3)">Campeón, subcampeón y podio se calculan automáticamente del bracket de eliminatoria.</div>
+          <div id="adm-ind-status" style="font-size:12px;color:var(--g);display:none"></div>
+        </div>
       </div>
       <div style="font-family:var(--fd);font-size:17px;letter-spacing:1px;margin:20px 0 10px;color:var(--g)">EL VESTUARIO</div>
       <div class="asec" id="adm-posts"></div>
@@ -1550,6 +1571,7 @@ function showMatchDetail(g,i){
 function goStep(n){
   if(n===2&&!gruposBuilt){buildGruposForm();gruposBuilt=true;}
   if(n===4)buildConfirm();
+  if(n===5)showIBAN();
   document.querySelectorAll('.fstep').forEach(function(s){s.style.display='none';});
   var st=document.getElementById('fs'+n); if(st)st.style.display='block';
   document.querySelectorAll('.stab').forEach(function(t,i){t.className='stab'+(i===n?' on':i<n?' dn':'');});
@@ -1642,7 +1664,7 @@ function lookupPorra(){
   var ap=normStr((document.getElementById('eli-ap')||{}).value||'');
   if(!nom||!ap){showToast('⚠️ Escribe tu nombre y apellidos');return;}
   var found=PORRAS.find(function(p){return normStr(p.nombre)===normStr(nom)&&normStr(p.apellidos)===normStr(ap);});
-  if(!found){showToast('❌ No encontramos tu porra. Comprueba que coincide exactamente con lo que pusiste al inscribirte.');return;}
+  if(!found){showToast('❌ No encontramos tu porra. Escríbele por privado a César Esteban García para que lo compruebe.');return;}
   eliPorraId=found.id;
   document.getElementById('eli-lookup').style.display='none';
   document.getElementById('eli-form').style.display='block';
@@ -2034,6 +2056,17 @@ function renderAdmin(){
       +'<button class="btn bdanger bsm" onclick="deletePorra('+p.id+')" title="Eliminar definitivamente">🗑️</button>'
     +'</div>';
   }).join(''):'<div style="padding:16px;text-align:center;font-size:13px;color:var(--t3)">Sin participantes</div>';
+  // Populate individual fields with current values
+  var mvpEl=document.getElementById('adm-mvp');
+  if(mvpEl&&API_IND.mvp)mvpEl.value=API_IND.mvp;
+  var g1El=document.getElementById('adm-gol1');
+  if(g1El&&API_IND.gol1)g1El.value=API_IND.gol1;
+  var g1nEl=document.getElementById('adm-gol1n');
+  if(g1nEl&&API_IND.gol1n)g1nEl.value=API_IND.gol1n;
+  var g2El=document.getElementById('adm-gol2');
+  if(g2El&&API_IND.gol2)g2El.value=API_IND.gol2;
+  var g2nEl=document.getElementById('adm-gol2n');
+  if(g2nEl&&API_IND.gol2n)g2nEl.value=API_IND.gol2n;
   var poEl=document.getElementById('adm-posts');
   if(poEl)poEl.innerHTML=SB_POSTS.length?SB_POSTS.map(function(po){
     return '<div style="display:grid;grid-template-columns:1fr auto;gap:10px;padding:10px 16px;border-bottom:1px solid var(--bd2)">'
@@ -2148,6 +2181,44 @@ function editResult(key, homeTeam, awayTeam){
     resultsBuilt=false; buildResults();
     showToast('✅ '+key+': '+h+'-'+a);
   };
+}
+
+function saveIndividual(){
+  var mvp   = (document.getElementById('adm-mvp')||{}).value||'';
+  var gol1  = (document.getElementById('adm-gol1')||{}).value||'';
+  var gol1n = parseInt((document.getElementById('adm-gol1n')||{}).value)||0;
+  var gol2  = (document.getElementById('adm-gol2')||{}).value||'';
+  var gol2n = parseInt((document.getElementById('adm-gol2n')||{}).value)||0;
+  if(!mvp&&!gol1&&!gol2){showToast('⚠️ Rellena al menos un campo');return;}
+  if(mvp)  API_IND.mvp  = mvp.trim();
+  if(gol1) API_IND.gol1 = gol1.trim();
+  if(gol1n)API_IND.gol1n= gol1n;
+  if(gol2) API_IND.gol2 = gol2.trim();
+  if(gol2n)API_IND.gol2n= gol2n;
+  calcPuntos(); renderRanking();
+  var st=document.getElementById('adm-ind-status');
+  if(st){
+    st.style.display='block';
+    var parts=[];
+    if(mvp)  parts.push('MVP: '+mvp);
+    if(gol1) parts.push('Gol. torneo: '+gol1+(gol1n?' ('+gol1n+')':''));
+    if(gol2) parts.push('Gol. España: '+gol2+(gol2n?' ('+gol2n+')':''));
+    st.textContent='✅ Guardado — '+parts.join(' · ');
+  }
+  showToast('✅ Premios actualizados');
+}
+
+var _i=['ES68','0075','0014','9007','0626','1363'];
+function getIBAN(){return _i.join(' ');}
+function copyIBAN(){
+  var iban=getIBAN();
+  var el=document.getElementById('iban-display');
+  if(navigator.clipboard)navigator.clipboard.writeText(iban);
+  showToast('📋 IBAN copiado');
+}
+function showIBAN(){
+  var el=document.getElementById('iban-display');
+  if(el)el.textContent=getIBAN();
 }
 
 (function init(){loadPorras();loadPosts();initHome();buildResults();handleHash();if(!MUNDIAL_STARTED){setInterval(updateCD,1000);updateCD();}else{refreshAll();scheduleRefresh();}setTimeout(function(){setupSearch('f-mvp',WORLD_PLAYERS);setupSearch('f-g1',WORLD_PLAYERS);setupSearch('f-g2',SPAIN_PLAYERS);},400);})();
