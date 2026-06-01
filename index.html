@@ -325,7 +325,138 @@ footer span{color:var(--g)}
 </style>
 </head>
 <body>
-<header class="bar"><div class="ff">
+<header class="bar"><div class="logo" onclick="goPage('inicio')"><img id="tl" src="logo.png" alt="NFQ WC2026"/><div class="logo-t"><span class="logo-n">NFQ</span><span class="logo-w">WORLD CUP 2026</span></div></div><nav id="mn"><button class="nl on" onclick="goPage('inicio')">Inicio</button><button class="nl" id="nav-participar" onclick="goPage('participar')">Participar</button><button class="nl" onclick="goPage('instrucciones')">Instrucciones</button><button class="nl" onclick="goPage('ranking')">Ranking</button><button class="nl" onclick="goPage('resultados')">Resultados</button><button class="nl" onclick="goPage('vestuario')">El Vestuario</button><button class="nl" id="nav-eli" style="display:none;color:var(--gold)" onclick="goPage('eliminatoria')">🏆 Porra Eliminatoria</button></nav><div class="hb" onclick="toggleMenu()"><span></span><span></span><span></span></div></header>
+<div class='toast' id='toast'></div>
+<!-- MODAL VER PORRA -->
+<div class="mov" id="mov-porra" onclick="if(event.target===this)closeMov('mov-porra')" style="display:none">
+  <div class="md">
+    <button class="mcl" onclick="closeMov('mov-porra')">✕</button>
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px;margin-bottom:4px">
+      <div><div class="mdt" id="mp-n">—</div><div class="mds" id="mp-t"></div></div>
+      <div style="font-family:var(--fm);font-size:20px;color:var(--g);font-weight:700" id="mp-p">—</div>
+    </div>
+    <div id="mp-lk" style="display:none;background:var(--s2);border-radius:var(--r);padding:20px;text-align:center;margin-top:10px">
+      <div style="font-size:28px;margin-bottom:8px">🔒</div>
+      <div style="font-size:14px;font-weight:600;margin-bottom:4px">Porras bloqueadas hasta el inicio del Mundial</div>
+      <div style="font-size:13px;color:var(--t2)">El 11 de junio a las 21:00 se desvelan todas las predicciones</div>
+    </div>
+    <div id="mp-bd">
+      <div class="mdc">Premios individuales</div><div class="mdg" id="mp-ind"></div>
+      <div class="mdc">Fase Final</div><div class="mdg" id="mp-ff"></div>
+      <div class="mdc">Grupos</div><div id="mp-gr"></div>
+      <button class="btn bg bsm" style="margin-top:14px;width:100%;justify-content:center" onclick="downloadPDF()">📄 Descargar PDF de mi porra</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL DETALLE PARTIDO -->
+<div class="mov" id="mov-match" onclick="if(event.target===this)closeMov('mov-match')" style="display:none">
+  <div class="md"><button class="mcl" onclick="closeMov('mov-match')">✕</button><div id="mov-mbody"></div></div>
+</div>
+
+<!-- ═══ INICIO ═══ -->
+<div class="pg" id="pg-inicio" style="display:block">
+  <div class="hero" id="hero-section">
+    <div class="hbg"></div><div class="hgr"></div>
+    <div class="hc">
+      <div class="hey an">Porra Oficial · NFQ · USA · México · Canadá</div>
+      <img id="tl" src="logo.png" alt="NFQ WC" class="hlogo an d1"/>
+      <div class="hwc an d1">WORLD CUP 2026 · PORRA OFICIAL</div>
+      <p class="hsub an d2">La porra oficial de NFQ para el Mundial. Predice, compite y llévate el bote.</p>
+      <div class="cdw an d3" id="cd-wrap">
+        <div class="cds">
+          <div class="cdi"><div class="cdn" id="cd-d">12</div><div class="cdl">Días</div></div>
+          <div class="cdx">:</div>
+          <div class="cdi"><div class="cdn" id="cd-h">00</div><div class="cdl">Horas</div></div>
+          <div class="cdx">:</div>
+          <div class="cdi"><div class="cdn" id="cd-m">00</div><div class="cdl">Min</div></div>
+          <div class="cdx">:</div>
+          <div class="cdi"><div class="cdn" id="cd-s">00</div><div class="cdl">Seg</div></div>
+        </div>
+      </div>
+      <div class="an d4" style="margin-bottom:16px">
+        <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+          <button class="btn bp" id="btn-participar" onclick="goPage('participar')">⚽ Apuntarme</button>
+          <button class="btn bo" onclick="goPage('instrucciones')">📋 Instrucciones</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ELI PROMO — visible solo durante ventana eliminatoria -->
+  <div id="eli-promo" style="display:none;max-width:1000px;margin:28px auto 0;padding:0 20px">
+    <div style="background:linear-gradient(135deg,rgba(245,200,66,.12),rgba(0,192,115,.08));border:1.5px solid var(--gold);border-radius:var(--rl);padding:22px 24px;display:flex;align-items:center;gap:18px;flex-wrap:wrap">
+      <div style="font-size:36px">🏆</div>
+      <div style="flex:1;min-width:200px">
+        <div style="font-family:var(--fd);font-size:22px;letter-spacing:1px;color:var(--gold)">PORRA ELIMINATORIA ABIERTA</div>
+        <div style="font-size:13px;color:var(--t2);margin-top:4px" id="eli-deadline-txt">Completa tu bracket antes del primer partido de 16avos</div>
+      </div>
+      <button class="btn bgold" onclick="goPage('eliminatoria')">Completar mi bracket →</button>
+    </div>
+  </div>
+
+
+  <div id="bote-wrap" style="display:none;max-width:1000px;margin:20px auto 0;padding:0 20px"><div style="background:var(--s1);border:1px solid var(--bd);border-radius:var(--rl);padding:16px 22px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px"><div><div style="font-family:var(--fm);font-size:9px;color:var(--t3);letter-spacing:2px;margin-bottom:4px">BOTE TOTAL</div><div style="font-family:var(--fd);font-size:36px;color:var(--g);letter-spacing:2px" id="bote-total">0€</div></div><div style="display:flex;gap:20px;flex-wrap:wrap"><div style="text-align:center"><div style="font-family:var(--fd);font-size:22px;color:var(--gold)">50%</div><div style="font-size:11px;color:var(--t3)">🥇 1er &middot; <strong id="p1-eur" style="color:var(--gold)">0€</strong></div></div><div style="text-align:center"><div style="font-family:var(--fd);font-size:22px;color:#B0B8C0">30%</div><div style="font-size:11px;color:var(--t3)">🥈 2do &middot; <strong id="p2-eur" style="color:#B0B8C0">0€</strong></div></div><div style="text-align:center"><div style="font-family:var(--fd);font-size:22px;color:#C87832">20%</div><div style="font-size:11px;color:var(--t3)">🥉 3er &middot; <strong id="p3-eur" style="color:#C87832">0€</strong></div></div></div></div></div>
+  <!-- HOME LIVE — durante el mundial -->
+  <div id="home-live" style="display:none">
+    <div style="max-width:1000px;margin:0 auto;padding:20px 20px 0">
+      <div style="display:grid;grid-template-columns:1fr 300px;gap:18px">
+        <div>
+          <div class="lbl" style="margin-bottom:8px">Partidos de hoy</div>
+          <div id="home-today"></div>
+          <div class="lbl" style="margin-top:16px;margin-bottom:8px">Ayer</div>
+          <div id="home-ayer"></div>
+        </div>
+        <div>
+          <div class="lbl" style="margin-bottom:10px">Estadísticas</div>
+          <div id="home-stats" class="card" style="padding:14px 16px;font-size:13px;color:var(--t2)">Cargando...</div>
+          <div style="font-size:10px;color:var(--t3);margin-top:8px;font-family:var(--fm);text-align:right" id="api-upd"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ PARTICIPAR ═══ -->
+<div class="pg" id="pg-participar" style="display:none">
+  <div class="pw">
+    <div class="lbl">Únete</div>
+    <h1 class="pt">PARTICIPAR</h1>
+    <div id="part-closed" style="display:none">
+      <div class="ab"><div>⛔</div><div>El plazo cerró el 10 de junio. El Mundial ya ha comenzado.</div></div>
+    </div>
+    <div id="part-open">
+      <div class="fw">
+        <div class="fc">
+          <div class="fch"><h2>APÚNTATE A LA PORRA</h2><p>Plazo hasta el 10 de junio · Pago por Bizum · 10€</p></div>
+          <div class="fb">
+            <div class="stabs">
+              <button class="stab on" id="st0" onclick="goStep(0)">1. Datos</button>
+              <button class="stab"   id="st1" onclick="goStep(1)">2. Premios</button>
+              <button class="stab"   id="st2" onclick="goStep(2)">3. Grupos</button>
+              <button class="stab"   id="st3" onclick="goStep(3)">4. Eliminatoria</button>
+              <button class="stab"   id="st4" onclick="goStep(4)">5. Confirmar</button>
+              <button class="stab"   id="st5">6. Pago</button>
+            </div>
+
+            <!-- 0: DATOS -->
+            <div class="fstep on" id="fs0">
+              <div class="sec-title">Datos personales</div>
+              <div class="fg2">
+                <div class="ff"><label>Nombre * <span style="font-size:10px;color:var(--t3);font-weight:400">(como en el chat de NFQ)</span></label><input class="fi" id="f-nom" placeholder="Nombre (como en el chat de NFQ)"/></div>
+                <div class="ff"><label>Apellidos * <span style="font-size:10px;color:var(--t3);font-weight:400">(como en el chat de NFQ)</span></label><input class="fi" id="f-ap" placeholder="Apellidos (como en el chat de NFQ)"/></div>
+              </div>
+              <div style="font-size:11px;color:var(--t3);margin-top:-4px;margin-bottom:4px">El mensaje del Bizum será: "Porra Nombre Apellidos"</div>
+              <div class="bnav" style="margin-top:16px">
+                <button class="btn bp bsm" onclick="validateStep0()">Siguiente: Premios individuales →</button>
+              </div>
+            </div>
+
+            <!-- 1: PREMIOS -->
+            <div class="fstep" id="fs1" style="display:none">
+              <div class="sec-title">Premios individuales</div>
+              
+              <div class="ff">
                 <label>MVP – Mejor jugador del torneo</label>
                 <input class="fi" id="f-mvp" placeholder="Nombre del jugador"/>
                 <div style="font-size:10px;color:var(--t3);margin-top:3px">Sin tildes · 20 pts si aciertas</div>
@@ -403,12 +534,12 @@ footer span{color:var(--g)}
                 <div style="font-size:13px;color:var(--t2);max-width:380px;margin:0 auto 14px;line-height:1.7">Tu porra está registrada pero <strong style="color:var(--t1)">no eres válido hasta que pagues</strong>. Realiza la transferencia antes del <strong style="color:var(--g)">10 de junio</strong>.</div>
                 <div style="background:rgba(232,41,58,.08);border:1px solid rgba(232,41,58,.2);border-radius:var(--r);padding:10px 16px;font-size:13px;color:var(--red);margin:0 auto 18px;max-width:380px">⚠️ Sin pago no saldrás en el ranking ni optarás a premios.</div>
                 <div style="font-family:var(--fd);font-size:80px;color:var(--g);line-height:1;margin:12px 0 6px">10€</div>
-                <div style="font-size:12px;color:var(--t3);margin-bottom:8px">Transferencia bancaria (toca para copiar el IBAN)</div>
-                <div class="spph" id="iban-display" onclick="copyIBAN()">Cargando...</div>
+                <div style="font-size:12px;color:var(--t3);margin-bottom:8px">Transferencia bancaria — toca el IBAN para copiar</div>
+                <div class="spph" id="iban-display" onclick="copyIBAN()" style="cursor:pointer">Cargando...</div>
                 <div style="font-size:12px;color:var(--t3);margin:12px 0 6px">Con el concepto (toca para copiar)</div>
                 <div class="spmsg" id="sp-msg" onclick="copyText(document.getElementById('sp-msg').dataset.msg,'Mensaje copiado')">Porra —</div>
                 <div style="font-size:11px;color:var(--t3);margin-bottom:14px">Toca para copiar</div>
-                <div style="font-size:12px;color:var(--t3);margin-bottom:20px;max-width:380px;margin-left:auto;margin-right:auto;line-height:1.6">Una vez confirmado el pago, serás añadido al grupo de NFQ de la porra para recibir notificaciones.</div>
+                <div style="font-size:12px;color:var(--t2);margin-bottom:20px;max-width:380px;margin-left:auto;margin-right:auto;line-height:1.6">Una vez confirmado el pago, serás añadido al grupo de NFQ de la porra para recibir notificaciones.</div>
                 <button class="btn bg bsm" onclick="goPage('ranking')">Ver ranking →</button>
               </div>
             </div>
@@ -477,39 +608,22 @@ footer span{color:var(--g)}
       <button class="btn bp bsm" id="btn-reg" onclick="showInstTab('tab-reg','tab-man')">📋 Reglas y puntuación</button>
       <button class="btn bg bsm" id="btn-man" onclick="showInstTab('tab-man','tab-reg')">📖 Manual de usuario</button>
     </div>
-
-    <!-- ── REGLAS ── -->
     <div id="tab-reg">
-
-      <div class="ab"><div>📅</div><div>Plazo de inscripción: <strong>10 de junio a las 22:00h</strong> · Inscripción: <strong>10€ por transferencia</strong></div></div>
-
+      <div class="ab"><div>📅</div><div>Plazo de inscripción: <strong>10 de junio a las 22:00h</strong> · Inscripción: <strong>10€ por transferencia bancaria</strong></div></div>
       <div class="dv"></div>
       <h2 style="font-family:var(--fd);font-size:22px;letter-spacing:1px;margin-bottom:14px">¿QUÉ ES LA PORRA?</h2>
       <div class="card" style="padding:16px 20px;margin-bottom:16px;font-size:13px;color:var(--t2);line-height:1.8">
         La porra del Mundial 2026 es un concurso de predicciones en el que puedes ganar hasta el <strong style="color:var(--gold)">50% del bote</strong>. Rellenas tus predicciones antes de que empiece el torneo, los puntos se calculan automáticamente con cada resultado y el ranking se actualiza en tiempo real. Hay dos fases: la <strong>porra de grupos</strong> (antes del 10 de junio) y la <strong>porra de eliminatoria</strong> (cuando se conozcan los cruces de 16avos).
       </div>
-
       <div class="dv"></div>
       <h2 style="font-family:var(--fd);font-size:22px;letter-spacing:1px;margin-bottom:14px">FASES DE LA PORRA</h2>
-
       <div class="isteps">
-        <div class="isp"><div class="isn">1</div><div class="ist">
-          <strong>Fase de grupos (ahora — hasta el 10 de junio)</strong><br/>
-          Rellenas los 72 partidos de la fase de grupos con tu predicción (1/X/2), los premios individuales (MVP del torneo, máximo goleador y máximo goleador de España) y pagas la inscripción. A partir del 11 de junio se desvelan todas las porras y los puntos empiezan a acumularse.
-        </div></div>
-        <div class="isp"><div class="isn">2</div><div class="ist">
-          <strong>Fase eliminatoria (cuando terminen los grupos)</strong><br/>
-          Cuando acaben los partidos de grupos y se conozcan los cruces de dieciseisavos, se abrirá en la web la sección de porra eliminatoria. Se avisará en el grupo de NFQ. Tendrás que rellenar tu bracket completo: quién gana en cada ronda hasta el campeón. El plazo cierra 5 minutos antes del primer partido de dieciseisavos.
-        </div></div>
-        <div class="isp"><div class="isn">3</div><div class="ist">
-          <strong>Fin del torneo (19 de julio)</strong><br/>
-          Al acabar el Mundial la web muestra el campeón, el marcador de la final y el podio de la porra. El bote se reparte entre los tres primeros del ranking.
-        </div></div>
+        <div class="isp"><div class="isn">1</div><div class="ist"><strong>Fase de grupos (hasta el 10 de junio)</strong><br/>Rellenas tus datos, los premios individuales (MVP y goleadores) y los 72 partidos de grupos con 1/X/2. A partir del 11 de junio se desvelan todas las porras y los puntos empiezan a acumularse.</div></div>
+        <div class="isp"><div class="isn">2</div><div class="ist"><strong>Fase eliminatoria (tras los grupos)</strong><br/>Cuando se conozcan los cruces de 16avos se abrirá la porra de eliminatoria. Se avisará en el grupo de NFQ. Rellenas tu bracket completo hasta el campeón. Plazo: 5 minutos antes del primer partido de 16avos.</div></div>
+        <div class="isp"><div class="isn">3</div><div class="ist"><strong>Fin del torneo (19 de julio)</strong><br/>Al acabar el Mundial la web muestra el campeón y el podio de la porra. El bote se reparte entre los tres primeros del ranking.</div></div>
       </div>
-
       <div class="dv"></div>
       <h2 style="font-family:var(--fd);font-size:26px;letter-spacing:1px;margin-bottom:16px">PUNTUACIÓN</h2>
-
       <div class="rg2">
         <div class="rc g"><div class="ri">⚽</div><div class="rtt">GRUPOS</div><table class="ptb"><thead><tr><th>Acierto</th><th>Pts</th></tr></thead><tbody><tr><td>Resultado 1/X/2 correcto</td><td><span class="pb">3</span></td></tr></tbody></table></div>
         <div class="rc b"><div class="ri">🏟️</div><div class="rtt">DIECISEISAVOS</div><table class="ptb"><thead><tr><th>Acierto</th><th>Pts</th></tr></thead><tbody><tr><td>Equipo clasificado</td><td><span class="pb">5</span></td></tr><tr><td>+ resultado exacto a 90'</td><td><span class="pb">+5</span></td></tr></tbody></table></div>
@@ -520,7 +634,6 @@ footer span{color:var(--g)}
         <div class="rc r"><div class="ri">🥉</div><div class="rtt">3º / 4º PUESTO</div><table class="ptb"><thead><tr><th>Acierto</th><th>Pts</th></tr></thead><tbody><tr><td>3er clasificado</td><td><span class="pb">30</span></td></tr><tr><td>+ resultado exacto a 90'</td><td><span class="pb">+15</span></td></tr><tr><td>4º clasificado</td><td><span class="pb">15</span></td></tr></tbody></table></div>
         <div class="rc g"><div class="ri">⭐</div><div class="rtt">INDIVIDUALES</div><table class="ptb"><thead><tr><th>Acierto</th><th>Pts</th></tr></thead><tbody><tr><td>MVP del torneo</td><td><span class="pb">20</span></td></tr><tr><td>Máx. goleador torneo</td><td><span class="pb">20</span></td></tr><tr><td>+ goles exactos</td><td><span class="pb">+15</span></td></tr><tr><td>Máx. goleador España</td><td><span class="pb">15</span></td></tr><tr><td>+ goles exactos</td><td><span class="pb">+15</span></td></tr></tbody></table></div>
       </div>
-
       <div class="dv"></div>
       <h2 style="font-family:var(--fd);font-size:22px;letter-spacing:1px;margin-bottom:14px">BOTE Y PREMIOS</h2>
       <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px">
@@ -528,63 +641,27 @@ footer span{color:var(--g)}
         <div class="card" style="padding:18px;text-align:center"><div style="font-size:22px">🥈</div><div style="font-family:var(--fd);font-size:30px;color:#B0B8C0">30%</div><div style="font-size:12px;color:var(--t2)">del bote</div></div>
         <div class="card" style="padding:18px;text-align:center"><div style="font-size:22px">🥉</div><div style="font-family:var(--fd);font-size:30px;color:#C87832">20%</div><div style="font-size:12px;color:var(--t2)">del bote</div></div>
       </div>
-      <div class="card" style="padding:14px 18px;font-size:13px;color:var(--t2);line-height:1.8;margin-bottom:14px">
-        El bote total es la suma de todas las inscripciones (10€ por persona). Se muestra en la web a partir del 11 de junio. El reparto se realiza al finalizar el torneo el 19 de julio.
-      </div>
-
+      <div class="card" style="padding:14px 18px;font-size:13px;color:var(--t2);line-height:1.8;margin-bottom:14px">El bote total es la suma de todas las inscripciones (10€ por persona). Se muestra en la web a partir del 11 de junio. El reparto se realiza al finalizar el torneo el 19 de julio.</div>
       <div class="dv"></div>
-      <h2 style="font-family:var(--fd);font-size:22px;letter-spacing:1px;margin-bottom:14px">DESEMPATE Y NORMAS</h2>
+      <h2 style="font-family:var(--fd);font-size:22px;letter-spacing:1px;margin-bottom:14px">NORMAS</h2>
       <div class="card" style="padding:14px 18px;font-size:13px;color:var(--t2);line-height:2;margin-bottom:8px">
         <div>⚖️ <strong>Empate en puntos:</strong> gana quien realizó la transferencia antes (fecha de registro).</div>
         <div>❌ <strong>Sin pago:</strong> tu porra no es válida, no apareces en el ranking y no optas a premios.</div>
         <div>🔒 <strong>Porras bloqueadas:</strong> nadie puede ver las predicciones de los demás hasta el 11 de junio.</div>
-        <div>🔒 <strong>Bracket bloqueado:</strong> el bracket de eliminatoria de cada participante no es visible hasta que empiece el primer partido de 16avos.</div>
+        <div>🔒 <strong>Bracket bloqueado:</strong> el bracket de eliminatoria no es visible hasta que empiece el primer partido de 16avos.</div>
         <div>📊 <strong>Resultado a 90':</strong> los puntos por resultado exacto en eliminatoria se calculan sobre el marcador a 90 minutos, sin contar prórroga ni penaltis.</div>
       </div>
     </div>
-
-    <!-- ── MANUAL ── -->
     <div id="tab-man" style="display:none">
-
-      <div class="man-sec"><h3>Paso 1 — Inscríbete</h3>
-        <p class="man-p">Ve a <strong>Participar</strong> en el menú. Rellena tu nombre y apellidos <strong>tal como apareces en el chat de NFQ</strong> — es importante porque así te buscarán en la fase de eliminatoria. Avanza al siguiente paso.</p>
-      </div>
-
-      <div class="man-sec"><h3>Paso 2 — Premios individuales</h3>
-        <p class="man-p">Introduce tu predicción para el <strong>MVP del torneo</strong>, el <strong>máximo goleador del torneo</strong> (con número de goles) y el <strong>máximo goleador de España</strong> (con número de goles). Usa el buscador — escribe 2 letras y aparecerán sugerencias de jugadores reales convocados al Mundial.</p>
-      </div>
-
-      <div class="man-sec"><h3>Paso 3 — Fase de grupos</h3>
-        <p class="man-p">Rellena los 72 partidos de la fase de grupos con tu predicción: <strong>1</strong> (gana el equipo local), <strong>X</strong> (empate) o <strong>2</strong> (gana el equipo visitante). No hace falta rellenarlos todos, pero solo puntúan los que hayas rellenado correctamente.</p>
-      </div>
-
-      <div class="man-sec"><h3>Paso 4 — Confirmar y pagar</h3>
-        <p class="man-p">Revisa tu porra y descarga el PDF si quieres guardarlo. Luego realiza una transferencia de <strong>10€</strong> con el concepto <strong>"Porra Nombre Apellidos"</strong> al IBAN que aparece en pantalla. Una vez confirmado el pago serás activado en el ranking y añadido al grupo de NFQ de la porra.</p>
-        <p class="man-p" style="color:var(--red)">⚠️ Sin transferencia no eres válido aunque hayas rellenado la porra.</p>
-      </div>
-
-      <div class="man-sec"><h3>Paso 5 — Porra de eliminatoria</h3>
-        <p class="man-p">Cuando terminen los partidos de grupos se abrirá la sección <strong>Porra Eliminatoria</strong> en el menú (se avisará en el grupo de NFQ). Entra, escribe tu nombre y apellidos exactamente como los pusiste al inscribirte, y rellena tu bracket completo. Tienes hasta <strong>5 minutos antes del primer partido de 16avos</strong> para guardarlo.</p>
-        <p class="man-p">Si tienes problemas para encontrar tu porra, escríbele por privado a César Esteban García.</p>
-      </div>
-
-      <div class="man-sec"><h3>Ver el ranking y las porras</h3>
-        <p class="man-p">El ranking se actualiza automáticamente con cada resultado. Puedes ver la porra completa de cualquier participante pulsando su nombre — las predicciones de grupos se desvelan el 11 de junio y el bracket de eliminatoria se desbloquea cuando empiece el primer partido de 16avos.</p>
-        <p class="man-p">También puedes descargar el PDF de cualquier porra desde el modal.</p>
-      </div>
-
-      <div class="man-sec"><h3>Resultados en tiempo real</h3>
-        <p class="man-p">En <strong>Resultados</strong> puedes ver todos los partidos del torneo, los marcadores en directo, los goleadores y las estadísticas de predicciones (qué porcentaje de participantes apostó por cada resultado). En <strong>Inicio</strong> aparecen los partidos del día con la hora en horario de España.</p>
-      </div>
-
-      <div class="man-sec"><h3>El Vestuario</h3>
-        <p class="man-p">Espacio libre para comentarios, propuestas de quedadas o lo que quieras. Publica con tu nombre o anónimamente. Puedes dar un 👍 o 👎 por publicación — solo un voto por persona y se puede cambiar.</p>
-      </div>
-
-      <div class="man-sec"><h3>¿Algo no funciona?</h3>
-        <p class="man-p">Si tienes cualquier problema — no encuentras tu porra, algo no carga, quieres cambiar algún dato — escríbele por privado a <strong>César Esteban García</strong> en el chat de NFQ.</p>
-      </div>
-
+      <div class="man-sec"><h3>Paso 1 — Inscríbete</h3><p class="man-p">Ve a <strong>Participar</strong> en el menú. Introduce tu nombre y apellidos <strong>tal como apareces en el chat de NFQ</strong> — es importante para que te puedan identificar en la fase de eliminatoria.</p></div>
+      <div class="man-sec"><h3>Paso 2 — Premios individuales</h3><p class="man-p">Introduce tu predicción para el <strong>MVP del torneo</strong>, el <strong>máximo goleador del torneo</strong> (con número de goles) y el <strong>máximo goleador de España</strong> (con número de goles). Usa el buscador — escribe 2 letras y aparecerán sugerencias de jugadores reales convocados al Mundial.</p></div>
+      <div class="man-sec"><h3>Paso 3 — Fase de grupos</h3><p class="man-p">Rellena los 72 partidos con tu predicción: <strong>1</strong> (gana local), <strong>X</strong> (empate) o <strong>2</strong> (gana visitante). Solo puntúan los que hayas rellenado correctamente.</p></div>
+      <div class="man-sec"><h3>Paso 4 — Confirmar y pagar</h3><p class="man-p">Revisa tu porra, descarga el PDF si quieres guardarlo y realiza una transferencia de <strong>10€</strong> con el concepto <strong>"Porra Nombre Apellidos"</strong> al IBAN que aparece en pantalla (toca para copiar). Sin transferencia no eres válido aunque hayas rellenado la porra.</p></div>
+      <div class="man-sec"><h3>Paso 5 — Porra de eliminatoria</h3><p class="man-p">Cuando terminen los grupos se abrirá la sección <strong>Porra Eliminatoria</strong> en el menú (se avisará en el grupo de NFQ). Entra, escribe tu nombre y apellidos exactamente como los pusiste al inscribirte y rellena tu bracket. Tienes hasta <strong>5 minutos antes del primer partido de 16avos</strong>.</p><p class="man-p">Si no encuentras tu porra escríbele por privado a <strong>César Esteban García</strong>.</p></div>
+      <div class="man-sec"><h3>Ranking y porras de los demás</h3><p class="man-p">El ranking se actualiza automáticamente. Pulsa el nombre de cualquier participante para ver su porra completa — las predicciones de grupos se desvelan el 11 de junio y el bracket de eliminatoria cuando empiece el primer partido de 16avos. También puedes descargar el PDF de cualquier porra.</p></div>
+      <div class="man-sec"><h3>Resultados en tiempo real</h3><p class="man-p">En <strong>Resultados</strong> ves todos los partidos, marcadores en directo, goleadores y estadísticas de predicciones. En <strong>Inicio</strong> aparecen los partidos del día con hora en horario de España.</p></div>
+      <div class="man-sec"><h3>El Vestuario</h3><p class="man-p">Espacio para comentarios y quedadas. Publica con tu nombre o anónimamente. Un 👍 o 👎 por publicación — se puede cambiar.</p></div>
+      <div class="man-sec"><h3>¿Algo no funciona?</h3><p class="man-p">Escríbele por privado a <strong>César Esteban García</strong> en el chat de NFQ.</p></div>
     </div>
   </div>
 </div>
@@ -690,24 +767,33 @@ footer span{color:var(--g)}
         <div id="adm-manual-results" style="margin-top:10px;font-size:12px;color:var(--t2)"></div>
       </div>
       <div style="font-family:var(--fd);font-size:17px;letter-spacing:1px;margin:20px 0 6px;color:var(--g)">PREMIOS INDIVIDUALES</div>
-      <div style="font-size:12px;color:var(--t3);margin-bottom:10px">Solo si la API no los trae automáticamente. Al guardar recalcula los puntos de todos.</div>
-      <div class="card" style="padding:14px 16px;margin-bottom:16px">
-        <div style="display:grid;gap:10px">
-          <div style="display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center">
-            <input class="fi" id="adm-mvp" placeholder="MVP (nombre jugador)" style="font-size:13px"/>
-            <button class="btn bgold bsm" onclick="saveIndividual()">Guardar todo</button>
-          </div>
-          <div style="display:grid;grid-template-columns:1fr 80px;gap:8px">
-            <input class="fi" id="adm-gol1" placeholder="Goleador torneo (nombre)"/>
-            <input class="fi" id="adm-gol1n" type="number" min="0" max="30" placeholder="Goles" style="text-align:center"/>
-          </div>
-          <div style="display:grid;grid-template-columns:1fr 80px;gap:8px">
-            <input class="fi" id="adm-gol2" placeholder="Goleador España (nombre)"/>
-            <input class="fi" id="adm-gol2n" type="number" min="0" max="30" placeholder="Goles" style="text-align:center"/>
-          </div>
-          <div style="font-size:10px;color:var(--t3)">Campeón, subcampeón y podio se calculan automáticamente del bracket de eliminatoria.</div>
-          <div id="adm-ind-status" style="font-size:12px;color:var(--g);display:none"></div>
+      <div style="font-size:12px;color:var(--t3);margin-bottom:10px">Solo si la API no los trae. Al guardar recalcula los puntos de todos.</div>
+      <div class="card" style="padding:14px 16px;margin-bottom:16px"><div style="display:grid;gap:10px">
+        <div style="display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center">
+          <input class="fi" id="adm-mvp" placeholder="MVP (nombre jugador)" style="font-size:13px"/>
+          <button class="btn bgold bsm" onclick="saveIndividual()">Guardar todo</button>
         </div>
+        <div style="display:grid;grid-template-columns:1fr 80px;gap:8px">
+          <input class="fi" id="adm-gol1" placeholder="Goleador torneo (nombre)"/>
+          <input class="fi" id="adm-gol1n" type="number" min="0" max="30" placeholder="Goles" style="text-align:center"/>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 80px;gap:8px">
+          <input class="fi" id="adm-gol2" placeholder="Goleador España (nombre)"/>
+          <input class="fi" id="adm-gol2n" type="number" min="0" max="30" placeholder="Goles" style="text-align:center"/>
+        </div>
+        <div id="adm-ind-status" style="font-size:12px;color:var(--g);display:none"></div>
+      </div></div>
+      <div style="font-family:var(--fd);font-size:17px;letter-spacing:1px;margin:20px 0 6px;color:var(--g)">RESULTADOS MANUALES</div>
+      <div style="font-size:12px;color:var(--t3);margin-bottom:10px">Solo si falla la API. También puedes editar en <strong style="color:var(--g)">Resultados</strong> pulsando ✏️ (requiere estar logueado).</div>
+      <div class="card" style="padding:14px 16px;margin-bottom:16px">
+        <div style="display:grid;grid-template-columns:1fr auto auto auto;gap:8px;align-items:center">
+          <input class="fi" id="adm-res-key" placeholder="Clave (ej: H_0)" style="font-family:var(--fm);font-size:12px"/>
+          <input class="fi" id="adm-res-h" type="number" min="0" max="20" placeholder="0" style="width:52px;text-align:center"/>
+          <input class="fi" id="adm-res-a" type="number" min="0" max="20" placeholder="0" style="width:52px;text-align:center"/>
+          <button class="btn bgold bsm" onclick="addManualResult()">Guardar</button>
+        </div>
+        <div style="font-size:10px;color:var(--t3);margin-top:6px">Letra grupo + _ + nº partido (0-5). Ej: H_0 = primer partido Grupo H</div>
+        <div id="adm-manual-results" style="margin-top:8px;font-size:12px;color:var(--t2)"></div>
       </div>
       <div style="font-family:var(--fd);font-size:17px;letter-spacing:1px;margin:20px 0 10px;color:var(--g)">EL VESTUARIO</div>
       <div class="asec" id="adm-posts"></div>
@@ -1467,7 +1553,7 @@ function buildResults(){
         :res?'<div class="scb">'+res.h+'</div><span class="scsep">:</span><div class="scb">'+res.a+'</div>'
         :'<div class="scb" style="color:var(--t3)">—</div><span class="scsep">:</span><div class="scb" style="color:var(--t3)">—</div>';
       var eBtn=ADM_LOGGED?'<button class="mbtn" style="font-size:10px;padding:3px 8px;margin-left:6px" onclick="event.stopPropagation();editResult(\''+k+'\',\''+m.h+'\',\''+m.a+'\')">✏️</button>':'';
-      html+='<div class="mrr" onclick="showMatchDetail(\''+g+'\',\''+i+'\')"><div class="mrt">'+m.h+'</div><div class="mrsc">'+scHtml+'</div><div class="mrt r">'+m.a+'</div><div class="detbtn" style="display:flex;align-items:center">'+(isLive?'<span class="liveb"><span class="livd"></span>LIVE</span>':'Ver →')+eBtn+'</div></div>';
+      html+='<div class="mrr" onclick="showMatchDetail(\''+g+'\',\''+i+'\')">' +'<div class="mrt">'+m.h+'</div><div class="mrsc">'+scHtml+'</div><div class="mrt r">'+m.a+'</div><div class="detbtn" style="display:flex;align-items:center">'+(isLive?'<span class="liveb"><span class="livd"></span>LIVE</span>':'Ver →')+eBtn+'</div></div>';
     });
     html+='</div>';
   });
@@ -1535,8 +1621,9 @@ function buildGruposForm(){
     html+='<div class="ghdr">GRUPO '+g+' — '+data.t.join(' · ')+'</div><div class="mgg">';
     data.m.forEach(function(m,i){
       var fid="fg_"+g+"_"+i;
+      var fh=flag(m.h), fa=flag(m.a);
       html+='<div class="mrow">'
-        +'<div class="mt2">'+m.h.toUpperCase()+'</div>'
+        +'<div class="mt2">'+fh+' '+m.h.toUpperCase()+'</div>'
         +'<div class="mvs-mid">'
           +'<div class="mbtn-wrap">'
             +'<button class="mbtn" id="'+fid+'_1" onclick="selMatch(this,\''+fid+'\',\'1\')">1</button>'
@@ -1544,7 +1631,7 @@ function buildGruposForm(){
             +'<button class="mbtn" id="'+fid+'_2" onclick="selMatch(this,\''+fid+'\',\'2\')">2</button>'
           +'</div>'
         +'</div>'
-        +'<div class="mt2 r">'+m.a.toUpperCase()+'</div>'
+        +'<div class="mt2 r">'+m.a.toUpperCase()+' '+fa+'</div>'
         +'<input type="hidden" id="'+fid+'" value=""/>'
         +'</div>';
     });
@@ -1995,17 +2082,11 @@ function renderAdmin(){
       +'<button class="btn bdanger bsm" onclick="deletePorra('+p.id+')" title="Eliminar definitivamente">🗑️</button>'
     +'</div>';
   }).join(''):'<div style="padding:16px;text-align:center;font-size:13px;color:var(--t3)">Sin participantes</div>';
-  // Populate individual fields with current values
-  var mvpEl=document.getElementById('adm-mvp');
-  if(mvpEl&&API_IND.mvp)mvpEl.value=API_IND.mvp;
-  var g1El=document.getElementById('adm-gol1');
-  if(g1El&&API_IND.gol1)g1El.value=API_IND.gol1;
-  var g1nEl=document.getElementById('adm-gol1n');
-  if(g1nEl&&API_IND.gol1n)g1nEl.value=API_IND.gol1n;
-  var g2El=document.getElementById('adm-gol2');
-  if(g2El&&API_IND.gol2)g2El.value=API_IND.gol2;
-  var g2nEl=document.getElementById('adm-gol2n');
-  if(g2nEl&&API_IND.gol2n)g2nEl.value=API_IND.gol2n;
+  var mvpEl=document.getElementById('adm-mvp'); if(mvpEl&&API_IND.mvp)mvpEl.value=API_IND.mvp;
+  var g1El=document.getElementById('adm-gol1'); if(g1El&&API_IND.gol1)g1El.value=API_IND.gol1;
+  var g1nEl=document.getElementById('adm-gol1n'); if(g1nEl&&API_IND.gol1n)g1nEl.value=API_IND.gol1n;
+  var g2El=document.getElementById('adm-gol2'); if(g2El&&API_IND.gol2)g2El.value=API_IND.gol2;
+  var g2nEl=document.getElementById('adm-gol2n'); if(g2nEl&&API_IND.gol2n)g2nEl.value=API_IND.gol2n;
   var poEl=document.getElementById('adm-posts');
   if(poEl)poEl.innerHTML=SB_POSTS.length?SB_POSTS.map(function(po){
     return '<div style="display:grid;grid-template-columns:1fr auto;gap:10px;padding:10px 16px;border-bottom:1px solid var(--bd2)">'
@@ -2023,39 +2104,6 @@ function toggleActive(id){
   showToast(p.active?'✅ '+displayName(p.nombre)+' activado':'❌ Desactivado');
 }
 function delPostAdmin(id){ sbDeletePost(id).then(function(){renderAdmin();showToast('Eliminado');}); }
-function addManualResult(){
-  var key=(document.getElementById('adm-res-key')||{}).value||'';
-  var h=document.getElementById('adm-res-h');
-  var a=document.getElementById('adm-res-a');
-  key=key.trim().toUpperCase();
-  if(!key||h.value===''||a.value===''){showToast('⚠️ Rellena la clave y el resultado');return;}
-  // Validate key format
-  if(!/^[A-L]_[0-5]$/.test(key)){showToast('⚠️ Formato incorrecto. Ej: H_0');return;}
-  var hv=parseInt(h.value), av=parseInt(a.value);
-  API_GR_LIVE[key]={h:hv,a:av,goals:[]};
-  calcPuntos(); renderRanking();
-  // Show in admin
-  var el=document.getElementById('adm-manual-results');
-  if(el){
-    var existing=el.innerHTML;
-    el.innerHTML=existing+'<div style="padding:4px 0;border-bottom:1px solid var(--bd2)">✅ <strong>'+key+'</strong>: '+hv+' - '+av+'</div>';
-  }
-  // Clear inputs
-  document.getElementById('adm-res-key').value='';
-  h.value=''; a.value='';
-  showToast('✅ Resultado '+key+' guardado: '+hv+'-'+av);
-  resultsBuilt=false; buildResults();
-}
-function deletePorra(id){
-  var p=PORRAS.find(function(x){return x.id===id;}); if(!p)return;
-  var full=displayName(p.nombre+(p.apellidos?' '+p.apellidos:''));
-  if(!confirm('¿Eliminar definitivamente a '+full+'? Esta acción no se puede deshacer.'))return;
-  sbDeletePorra(id).then(function(){
-    PORRAS=PORRAS.filter(function(x){return x.id!==id;});
-    calcPuntos(); renderAdmin(); renderRanking(); updateBote();
-    showToast('🗑️ '+full+' eliminado');
-  }).catch(function(e){console.error(e);showToast('Error al eliminar');});
-}
 
 // ── Vestuario ─────────────────────────────────────────────
 function publishPost(){
@@ -2123,42 +2171,53 @@ function editResult(key, homeTeam, awayTeam){
 }
 
 function saveIndividual(){
-  var mvp   = (document.getElementById('adm-mvp')||{}).value||'';
-  var gol1  = (document.getElementById('adm-gol1')||{}).value||'';
-  var gol1n = parseInt((document.getElementById('adm-gol1n')||{}).value)||0;
-  var gol2  = (document.getElementById('adm-gol2')||{}).value||'';
-  var gol2n = parseInt((document.getElementById('adm-gol2n')||{}).value)||0;
+  var mvp  =(document.getElementById('adm-mvp')||{}).value||'';
+  var gol1 =(document.getElementById('adm-gol1')||{}).value||'';
+  var gol1n=parseInt((document.getElementById('adm-gol1n')||{}).value)||0;
+  var gol2 =(document.getElementById('adm-gol2')||{}).value||'';
+  var gol2n=parseInt((document.getElementById('adm-gol2n')||{}).value)||0;
   if(!mvp&&!gol1&&!gol2){showToast('⚠️ Rellena al menos un campo');return;}
-  if(mvp)  API_IND.mvp  = mvp.trim();
-  if(gol1) API_IND.gol1 = gol1.trim();
-  if(gol1n)API_IND.gol1n= gol1n;
-  if(gol2) API_IND.gol2 = gol2.trim();
-  if(gol2n)API_IND.gol2n= gol2n;
+  if(mvp) API_IND.mvp =mvp.trim();
+  if(gol1)API_IND.gol1=gol1.trim();
+  if(gol1n)API_IND.gol1n=gol1n;
+  if(gol2)API_IND.gol2=gol2.trim();
+  if(gol2n)API_IND.gol2n=gol2n;
   calcPuntos(); renderRanking();
   var st=document.getElementById('adm-ind-status');
-  if(st){
-    st.style.display='block';
-    var parts=[];
-    if(mvp)  parts.push('MVP: '+mvp);
-    if(gol1) parts.push('Gol. torneo: '+gol1+(gol1n?' ('+gol1n+')':''));
-    if(gol2) parts.push('Gol. España: '+gol2+(gol2n?' ('+gol2n+')':''));
-    st.textContent='✅ Guardado — '+parts.join(' · ');
-  }
+  if(st){st.style.display='block';st.textContent='✅ Guardado';}
   showToast('✅ Premios actualizados');
+}
+
+function deletePorra(id){
+  var p=PORRAS.find(function(x){return x.id===id;}); if(!p)return;
+  var full=displayName(p.nombre+(p.apellidos?' '+p.apellidos:''));
+  if(!confirm('Eliminar definitivamente a '+full+'?'))return;
+  sbDeletePorra(id).then(function(){
+    PORRAS=PORRAS.filter(function(x){return x.id!==id;});
+    calcPuntos(); renderAdmin(); renderRanking(); updateBote();
+    showToast('Eliminado: '+full);
+  }).catch(function(e){console.error(e);showToast('Error al eliminar');});
+}
+
+function addManualResult(){
+  var key=((document.getElementById('adm-res-key')||{}).value||'').trim().toUpperCase();
+  var hEl=document.getElementById('adm-res-h'),aEl=document.getElementById('adm-res-a');
+  if(!key||!hEl||hEl.value===''||!aEl||aEl.value===''){showToast('⚠️ Rellena clave y resultado');return;}
+  if(!/^[A-L]_[0-5]$/.test(key)){showToast('⚠️ Formato: H_0');return;}
+  var hv=parseInt(hEl.value),av=parseInt(aEl.value);
+  API_GR_LIVE[key]={h:hv,a:av,goals:[]};
+  calcPuntos(); renderRanking();
+  var el=document.getElementById('adm-manual-results');
+  if(el)el.innerHTML+='<div style="padding:4px 0;border-bottom:1px solid #1a2e20">✅ <strong>'+key+'</strong>: '+hv+'-'+av+'</div>';
+  document.getElementById('adm-res-key').value='';hEl.value='';aEl.value='';
+  showToast('✅ '+key+': '+hv+'-'+av);
+  resultsBuilt=false; buildResults();
 }
 
 var _i=['ES68','0075','0014','9007','0626','1363'];
 function getIBAN(){return _i.join(' ');}
-function copyIBAN(){
-  var iban=getIBAN();
-  var el=document.getElementById('iban-display');
-  if(navigator.clipboard)navigator.clipboard.writeText(iban);
-  showToast('📋 IBAN copiado');
-}
-function showIBAN(){
-  var el=document.getElementById('iban-display');
-  if(el)el.textContent=getIBAN();
-}
+function copyIBAN(){if(navigator.clipboard)navigator.clipboard.writeText(getIBAN());showToast('📋 IBAN copiado');}
+function showIBAN(){var el=document.getElementById('iban-display');if(el)el.textContent=getIBAN();}
 
 (function init(){loadPorras();loadPosts();initHome();buildResults();handleHash();if(!MUNDIAL_STARTED){setInterval(updateCD,1000);updateCD();}else{refreshAll();scheduleRefresh();}setTimeout(function(){setupSearch('f-mvp',WORLD_PLAYERS);setupSearch('f-g1',WORLD_PLAYERS);setupSearch('f-g2',SPAIN_PLAYERS);},400);})();
 </script>
