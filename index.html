@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<meta charset='UTF-8'/>
+<meta name='viewport' content='width=device-width,initial-scale=1.0'/>
 <title>NFQ World Cup 2026 — Porra Oficial</title>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<link href='https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap' rel='stylesheet'/>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js'></script>
 <style>
 :root{
   --g:#00C073;--gd:#008F54;--gg:rgba(0,192,115,.14);
@@ -309,26 +309,12 @@ footer span{color:var(--g)}
 .d3{opacity:0;animation-delay:.27s}.d4{opacity:0;animation-delay:.37s}
 
 .rkh,.rkr{grid-template-columns:38px 1fr 62px 62px 62px 82px 74px}
+.mbtn-wrap{display:flex;gap:5px}.mbtn{background:var(--s2);border:1px solid var(--bd);color:var(--t2);font-family:var(--fm);font-size:12px;font-weight:700;padding:7px 14px;border-radius:var(--r);cursor:pointer;transition:.15s;min-width:40px;text-align:center}.mbtn:hover{border-color:var(--g);color:var(--g)}.mbtn.sel1{background:var(--g);border-color:var(--g);color:#000}.mbtn.selx{background:var(--gold);border-color:var(--gold);color:#000}.mbtn.sel2{background:var(--blue);border-color:var(--blue);color:#fff}.mrow{display:grid;grid-template-columns:1fr auto 1fr auto;align-items:center;gap:8px;padding:9px 0;border-bottom:1px solid var(--bd2)}.mrow:last-child{border-bottom:none}
 </style>
 </head>
 <body>
-<header class="bar">
-  <div class="logo" onclick="goPage('inicio')">
-    <img id="tl" src="logo.png" alt="NFQ WC2026"/>
-    <div class="logo-t"><span class="logo-n">NFQ</span><span class="logo-w">WORLD CUP 2026</span></div>
-  </div>
-  <nav id="mn">
-    <button class="nl on"  onclick="goPage('inicio')">Inicio</button>
-    <button class="nl"     id="nav-participar" onclick="goPage('participar')">Participar</button>
-    <button class="nl"     onclick="goPage('instrucciones')">Instrucciones</button>
-    <button class="nl"     onclick="goPage('ranking')">Ranking</button>
-    <button class="nl"     onclick="goPage('resultados')">Resultados</button>
-    <button class="nl"     onclick="goPage('vestuario')">El Vestuario</button>
-    <button class="nl"     id="nav-eli" style="display:none;color:var(--gold)" onclick="goPage('eliminatoria')">🏆 Porra Eliminatoria</button>
-  </nav>
-  <div class="hb" onclick="toggleMenu()"><span></span><span></span><span></span></div>
-</header>
-<div class="toast" id="toast"></div>
+<header class="bar"><div class="logo" onclick="goPage('inicio')"><img id="tl" src="logo.png" alt="NFQ WC2026"/><div class="logo-t"><span class="logo-n">NFQ</span><span class="logo-w">WORLD CUP 2026</span></div></div><nav id="mn"><button class="nl on" onclick="goPage('inicio')">Inicio</button><button class="nl" id="nav-participar" onclick="goPage('participar')">Participar</button><button class="nl" onclick="goPage('instrucciones')">Instrucciones</button><button class="nl" onclick="goPage('ranking')">Ranking</button><button class="nl" onclick="goPage('resultados')">Resultados</button><button class="nl" onclick="goPage('vestuario')">El Vestuario</button><button class="nl" id="nav-eli" style="display:none;color:var(--gold)" onclick="goPage('eliminatoria')">🏆 Porra Eliminatoria</button></nav><div class="hb" onclick="toggleMenu()"><span></span><span></span><span></span></div></header>
+<div class='toast' id='toast'></div>
 <!-- MODAL VER PORRA -->
 <div class="mov" id="mov-porra" onclick="if(event.target===this)closeMov('mov-porra')" style="display:none">
   <div class="md">
@@ -398,30 +384,7 @@ footer span{color:var(--g)}
   </div>
 
 
-  <!-- BOTE — visible desde que arranca el mundial -->
-  <div id="bote-wrap" style="display:none;max-width:1000px;margin:20px auto 0;padding:0 20px">
-    <div style="background:var(--s1);border:1px solid var(--bd);border-radius:var(--rl);padding:16px 22px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px">
-      <div>
-        <div style="font-family:var(--fm);font-size:9px;color:var(--t3);letter-spacing:2px;margin-bottom:4px">BOTE TOTAL</div>
-        <div style="font-family:var(--fd);font-size:36px;color:var(--g);letter-spacing:2px" id="bote-total">0€</div>
-      </div>
-      <div style="display:flex;gap:20px;flex-wrap:wrap">
-        <div style="text-align:center">
-          <div style="font-family:var(--fd);font-size:22px;color:var(--gold)">50%</div>
-          <div style="font-size:11px;color:var(--t3)">🥇 1er · <strong id="p1-eur" style="color:var(--gold)">0€</strong></div>
-        </div>
-        <div style="text-align:center">
-          <div style="font-family:var(--fd);font-size:22px;color:#B0B8C0">30%</div>
-          <div style="font-size:11px;color:var(--t3)">🥈 2do · <strong id="p2-eur" style="color:#B0B8C0">0€</strong></div>
-        </div>
-        <div style="text-align:center">
-          <div style="font-family:var(--fd);font-size:22px;color:#C87832">20%</div>
-          <div style="font-size:11px;color:var(--t3)">🥉 3er · <strong id="p3-eur" style="color:#C87832">0€</strong></div>
-        </div>
-      </div>
-    </div>
-  </div>
-
+  <div id="bote-wrap" style="display:none;max-width:1000px;margin:20px auto 0;padding:0 20px"><div style="background:var(--s1);border:1px solid var(--bd);border-radius:var(--rl);padding:16px 22px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px"><div><div style="font-family:var(--fm);font-size:9px;color:var(--t3);letter-spacing:2px;margin-bottom:4px">BOTE TOTAL</div><div style="font-family:var(--fd);font-size:36px;color:var(--g);letter-spacing:2px" id="bote-total">0€</div></div><div style="display:flex;gap:20px;flex-wrap:wrap"><div style="text-align:center"><div style="font-family:var(--fd);font-size:22px;color:var(--gold)">50%</div><div style="font-size:11px;color:var(--t3)">🥇 1er &middot; <strong id="p1-eur" style="color:var(--gold)">0€</strong></div></div><div style="text-align:center"><div style="font-family:var(--fd);font-size:22px;color:#B0B8C0">30%</div><div style="font-size:11px;color:var(--t3)">🥈 2do &middot; <strong id="p2-eur" style="color:#B0B8C0">0€</strong></div></div><div style="text-align:center"><div style="font-family:var(--fd);font-size:22px;color:#C87832">20%</div><div style="font-size:11px;color:var(--t3)">🥉 3er &middot; <strong id="p3-eur" style="color:#C87832">0€</strong></div></div></div></div></div>
   <!-- HOME LIVE — durante el mundial -->
   <div id="home-live" style="display:none">
     <div style="max-width:1000px;margin:0 auto;padding:20px 20px 0">
@@ -609,43 +572,11 @@ footer span{color:var(--g)}
                 <button class="eli-tab" onclick="showEliTab(3)">Semifinales</button>
                 <button class="eli-tab" onclick="showEliTab(4)">Final + Podio</button>
               </div>
-              <div class="eli-panel on" id="eli-p0">
-                <div id="r32-form"></div>
-                <div class="bnav" style="margin-top:14px;justify-content:flex-end">
-                  <button class="btn bgold bsm" onclick="showEliTab(1)">Continuar: Octavos →</button>
-                </div>
-              </div>
-              <div class="eli-panel" id="eli-p1" style="display:none">
-                <div id="r16-form"></div>
-                <div class="bnav" style="margin-top:14px;justify-content:flex-end">
-                  <button class="btn bgold bsm" onclick="showEliTab(2)">Continuar: Cuartos →</button>
-                </div>
-              </div>
-              <div class="eli-panel" id="eli-p2" style="display:none">
-                <div id="qf-form"></div>
-                <div class="bnav" style="margin-top:14px;justify-content:flex-end">
-                  <button class="btn bgold bsm" onclick="showEliTab(3)">Continuar: Semifinales →</button>
-                </div>
-              </div>
-              <div class="eli-panel" id="eli-p3" style="display:none">
-                <div id="sf-form"></div>
-                <div class="bnav" style="margin-top:14px;justify-content:flex-end">
-                  <button class="btn bgold bsm" onclick="showEliTab(4)">Continuar: Final →</button>
-                </div>
-              </div>
-              <div class="eli-panel" id="eli-p4" style="display:none">
-                <div id="fin-form"></div>
-                <div class="sec-title" style="margin-top:16px">Campeón y podio</div>
-                <div class="cg4">
-                  <div class="cp"><span class="ctro">🥇</span><div class="clbl">Campeón</div><input class="cin" id="ff-c" placeholder="Equipo" oninput="checkEliComplete()"/></div>
-                  <div class="cp"><span class="ctro">🥈</span><div class="clbl">Subcampeón</div><input class="cin" id="ff-s" placeholder="Equipo" oninput="checkEliComplete()"/></div>
-                  <div class="cp"><span class="ctro">🥉</span><div class="clbl">3er puesto</div><input class="cin" id="ff-3" placeholder="Equipo" oninput="checkEliComplete()"/></div>
-                  <div class="cp"><span class="ctro">4️⃣</span><div class="clbl">4º puesto</div><input class="cin" id="ff-4" placeholder="Equipo" oninput="checkEliComplete()"/></div>
-                </div>
-                <div class="bnav" style="margin-top:16px">
-                  <button class="btn bgold bsm" id="btn-guardar-bracket" disabled style="flex:1;justify-content:center;opacity:.4;cursor:not-allowed" onclick="submitEliPorra()">✅ Guardar mi bracket</button>
-                </div>
-              </div>
+              <div class="eli-panel on" id="eli-p0"><div id="r32-form"></div><div class="bnav" style="margin-top:14px;justify-content:flex-end"><button class="btn bgold bsm" onclick="showEliTab(1)">Continuar: Octavos →</button></div></div>
+              <div class="eli-panel" id="eli-p1" style="display:none"><div id="r16-form"></div><div class="bnav" style="margin-top:14px;justify-content:flex-end"><button class="btn bgold bsm" onclick="showEliTab(2)">Continuar: Cuartos →</button></div></div>
+              <div class="eli-panel" id="eli-p2" style="display:none"><div id="qf-form"></div><div class="bnav" style="margin-top:14px;justify-content:flex-end"><button class="btn bgold bsm" onclick="showEliTab(3)">Continuar: Semis →</button></div></div>
+              <div class="eli-panel" id="eli-p3" style="display:none"><div id="sf-form"></div><div class="bnav" style="margin-top:14px;justify-content:flex-end"><button class="btn bgold bsm" onclick="showEliTab(4)">Continuar: Final →</button></div></div>
+              <div class="eli-panel" id="eli-p4" style="display:none"><div id="fin-form"></div><div class="sec-title" style="margin-top:16px">Campeón y podio</div><div class="cg4"><div class="cp"><span class="ctro">🥇</span><div class="clbl">Campeón</div><input class="cin" id="ff-c" placeholder="Equipo" oninput="checkEliComplete()"/></div><div class="cp"><span class="ctro">🥈</span><div class="clbl">Subcampeón</div><input class="cin" id="ff-s" placeholder="Equipo" oninput="checkEliComplete()"/></div><div class="cp"><span class="ctro">🥉</span><div class="clbl">3er puesto</div><input class="cin" id="ff-3" placeholder="Equipo" oninput="checkEliComplete()"/></div><div class="cp"><span class="ctro">4️⃣</span><div class="clbl">4º puesto</div><input class="cin" id="ff-4" placeholder="Equipo" oninput="checkEliComplete()"/></div></div><div class="bnav" style="margin-top:16px"><button class="btn bgold bsm" id="btn-guardar-bracket" disabled style="flex:1;justify-content:center;opacity:.4;cursor:not-allowed" onclick="submitEliPorra()">✅ Guardar mi bracket</button></div></div>
             </div>
           </div>
         </div>
@@ -797,14 +728,15 @@ footer span{color:var(--g)}
 
 <footer><p>⚽ NFQ World Cup Porra 2026 · <span>USA · México · Canadá</span> · 11 jun – 19 jul 2026</p></footer>
 <script>
-var MUNDIAL_STARTED = (Date.now() >= new Date('2026-06-11T19:00:00Z').getTime());
-var ELI_ACTIVE      = false;
-var ELI_STARTED     = false; // true when first R16 match kicks off (set by smart_api checkEliActive)
-var PORRAS          = [];
-var API_IND         = {mvp:'',gol1:'',gol1n:0,gol2:'',gol2n:0,camp:'',sub:'',p3:'',p4:''};
-var API_GR_LIVE     = {};
-var API_LIVE_DATA   = null;
-var API_CACHE       = {grupos:{},upcoming:[],yesterday:[]};
+var MUNDIAL_STARTED=(Date.now()>=new Date('2026-06-11T19:00:00Z').getTime());
+var ELI_ACTIVE=false;
+var ELI_STARTED=false;
+var PORRAS=[];
+var SB_POSTS=[];
+var API_IND={mvp:'',gol1:'',gol1n:0,gol2:'',gol2n:0,camp:'',sub:'',p3:'',p4:''};
+var API_GR_LIVE={};
+var API_LIVE_DATA=null;
+var API_CACHE={grupos:{},upcoming:[],yesterday:[]};
 
 const GR = {
   A:{t:['México','Sudáfrica','Corea del Sur','Chequia'],m:[
@@ -883,37 +815,6 @@ const SF_PAIRS  = [[0,1],[2,3]];
 
 function normStr(s){ return (s||'').toLowerCase().trim().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/\s+/g,' '); }
 function showToast(msg){ var t=document.getElementById('toast'); t.textContent=msg; t.className='toast show'; setTimeout(function(){t.className='toast';},3000); }
-function copyText(txt,msg){ if(navigator.clipboard)navigator.clipboard.writeText(txt); showToast('📋 '+(msg||'Copiado')); }
-function closeMov(id){ document.getElementById(id).style.display='none'; document.body.style.overflow=''; }
-function openMov(id){ document.getElementById(id).style.display='flex'; document.body.style.overflow='hidden'; }
-function timeSince(ts){ var d=Date.now()-new Date(ts).getTime(),mn=Math.floor(d/60000),h=Math.floor(d/3600000),dd=Math.floor(d/86400000); return dd>0?'hace '+dd+'d':h>0?'hace '+h+'h':mn>0?'hace '+mn+'m':'ahora'; }
-
-function goPage(id){
-  var pages=['inicio','participar','instrucciones','ranking','resultados','vestuario','admin'];
-  pages.forEach(function(p){ document.getElementById('pg-'+p).style.display='none'; });
-  document.getElementById('pg-'+id).style.display='block';
-  var navLinks=document.querySelectorAll('.nl');
-  navLinks.forEach(function(n,i){ n.className='nl'+(pages[i]===id?' on':''); });
-  document.getElementById('mn').classList.remove('open');
-  window.scrollTo(0,0);
-  if(id==='ranking')renderRanking();
-  if(id==='resultados')buildResults();
-  if(id==='vestuario')renderPosts();
-  if(id==='admin')renderAdmin();
-}
-function toggleMenu(){ document.getElementById('mn').classList.toggle('open'); }
-function showInstTab(show,hide){
-  document.getElementById(show).style.display='block';
-  document.getElementById(hide).style.display='none';
-  document.getElementById('btn-reg').className=show==='tab-reg'?'btn bp bsm':'btn bg bsm';
-  document.getElementById('btn-man').className=show==='tab-man'?'btn bp bsm':'btn bg bsm';
-}
-function showRTab(btn,id){
-  document.querySelectorAll('.rpanel').forEach(function(p){p.className='rpanel';});
-  document.querySelectorAll('.rtab').forEach(function(t){t.className='rtab';});
-  document.getElementById(id).className='rpanel on';
-  btn.className='rtab on';
-}
 
 // ═══════════════════════════════════════════════════════════
 // JUGADORES MUNDIAL 2026 — datos reales de convocatorias
@@ -1030,11 +931,11 @@ var CACHE = {
   nextMatchTime: null
 };
 
-var API_GR_LIVE = {};
-var API_LIVE_DATA = null;
-var API_CACHE = {grupos:{}, upcoming:[], yesterday:[]};
-var SB_POSTS = [];
-// PORRAS and ELI_ACTIVE declared globally // fase eliminatoria activa
+// API_GR_LIVE declared globally
+// API_LIVE_DATA declared globally
+// API_CACHE declared globally
+// SB_POSTS declared globally
+// PORRAS declared globally
 
 // ── Cache intervals ───────────────────────────────────────
 // Live match: refresh every 30s
@@ -1294,8 +1195,6 @@ function scheduleRefresh() {
 // ═══════════════════════════════════════════════════════════
 
 var ADMIN_PW    = 'nfq2026';
-var PORRAS      = [];
-var SB_POSTS    = [];
 var prevRk      = [];
 var koState     = {};
 var eliPorraId  = null;
@@ -1599,18 +1498,33 @@ function validateStep0(){
 }
 
 function buildGruposForm(){
-  var cont=document.getElementById('grupos-fc'); if(!cont)return;
-  var html='';
+  var cont=document.getElementById("grupos-fc"); if(!cont)return;
+  var html="";
   Object.keys(GR).forEach(function(g){
     var data=GR[g];
     html+='<div class="ghdr">GRUPO '+g+' — '+data.t.join(' · ')+'</div><div class="mgg">';
     data.m.forEach(function(m,i){
-      html+='<div class="mrow"><div class="mt2">'+m.h+'</div><div class="mvs">vs</div><div class="mt2 r">'+m.a+'</div>'
-        +'<select class="msel" id="fg_'+g+'_'+i+'"><option value="">—</option><option value="1">1</option><option value="x">X</option><option value="2">2</option></select></div>';
+      var fid="fg_"+g+"_"+i;
+      html+='<div class="mrow">'
+        +'<div class="mt2">'+m.h+'</div>'
+        +'<div class="mvs">vs</div>'
+        +'<div class="mt2 r">'+m.a+'</div>'
+        +'<div class="mbtn-wrap">'
+        +'<button class="mbtn" id="'+fid+'_1" onclick="selMatch(this,\''+fid+'\',\'1\')">1</button>'
+        +'<button class="mbtn" id="'+fid+'_x" onclick="selMatch(this,\''+fid+'\',\'x\')">X</button>'
+        +'<button class="mbtn" id="'+fid+'_2" onclick="selMatch(this,\''+fid+'\',\'2\')">2</button>'
+        +'</div>'
+        +'<input type="hidden" id="'+fid+'" value=""/>'
+        +'</div>';
     });
-    html+='</div>';
+    html+="</div>";
   });
   cont.innerHTML=html;
+}
+function selMatch(btn,fid,val){
+  var h=document.getElementById(fid); if(h)h.value=val;
+  btn.parentElement.querySelectorAll(".mbtn").forEach(function(b){b.className="mbtn";});
+  btn.className="mbtn "+(val==="1"?"sel1":val==="x"?"selx":"sel2");
 }
 
 function buildConfirm(){
@@ -2067,26 +1981,7 @@ function votePost(id,dir){
   saveVotes(); sbVotePost(id,upD,downD);
 }
 
-(function init(){
-  loadPorras();
-  loadPosts();
-  initHome();
-  buildResults();
-  handleHash();
-  if(!MUNDIAL_STARTED){
-    setInterval(updateCD,1000);
-    updateCD();
-  } else {
-    refreshAll();
-    scheduleRefresh();
-  }
-  // Setup player search
-  setTimeout(function(){
-    setupSearch('f-mvp', WORLD_PLAYERS);
-    setupSearch('f-g1',  WORLD_PLAYERS);
-    setupSearch('f-g2',  SPAIN_PLAYERS);
-  }, 400);
-})();
+(function init(){loadPorras();loadPosts();initHome();buildResults();handleHash();if(!MUNDIAL_STARTED){setInterval(updateCD,1000);updateCD();}else{refreshAll();scheduleRefresh();}setTimeout(function(){setupSearch('f-mvp',WORLD_PLAYERS);setupSearch('f-g1',WORLD_PLAYERS);setupSearch('f-g2',SPAIN_PLAYERS);},400);})();
 </script>
 </body>
 </html>
