@@ -428,7 +428,7 @@ footer span{color:var(--g)}
     <div id="part-open">
       <div class="fw">
         <div class="fc">
-          <div class="fch"><h2>APÚNTATE A LA PORRA</h2><p>Plazo hasta el 10 de junio · Pago por Bizum · 10€</p></div>
+          <div class="fch"><h2>APÚNTATE A LA PORRA</h2><p>Plazo hasta el 10 de junio · Pago por transferencia · 10€</p></div>
           <div class="fb">
             <div class="stabs">
               <button class="stab on" id="st0" onclick="goStep(0)">1. Datos</button>
@@ -446,7 +446,7 @@ footer span{color:var(--g)}
                 <div class="ff"><label>Nombre * <span style="font-size:10px;color:var(--t3);font-weight:400">(como en el chat de NFQ)</span></label><input class="fi" id="f-nom" placeholder="Nombre (como en el chat de NFQ)"/></div>
                 <div class="ff"><label>Apellidos * <span style="font-size:10px;color:var(--t3);font-weight:400">(como en el chat de NFQ)</span></label><input class="fi" id="f-ap" placeholder="Apellidos (como en el chat de NFQ)"/></div>
               </div>
-              <div style="font-size:11px;color:var(--t3);margin-top:-4px;margin-bottom:4px">El mensaje del Bizum será: "Porra Nombre Apellidos"</div>
+              <div style="font-size:11px;color:var(--t3);margin-top:-4px;margin-bottom:4px">El mensaje de la transferencia será: "Porra Nombre Apellidos"</div>
               <div class="bnav" style="margin-top:16px">
                 <button class="btn bp bsm" onclick="validateStep0()">Siguiente: Premios individuales →</button>
               </div>
@@ -1651,7 +1651,7 @@ function buildConfirm(){
   var ap=normStr((document.getElementById('f-ap')||{}).value||'');
   var full=(nom+' '+ap).trim()||'Sin nombre';
   var el=document.getElementById('cn-n'); if(el)el.textContent=displayName(full).toUpperCase();
-  var eb=document.getElementById('cn-b'); if(eb)eb.textContent='Mensaje Bizum: "Porra '+displayName(full)+'"';
+  var eb=document.getElementById('cn-b'); if(eb)eb.textContent='Mensaje transferencia: "Porra '+displayName(full)+'"';
   var cg=document.getElementById('cn-g');
   if(cg)cg.innerHTML='<div style="color:var(--t3)">MVP</div><div style="font-weight:600">'+((document.getElementById('f-mvp')||{}).value||'—')+'</div>'
     +'<div style="color:var(--t3)">Goleador torneo</div><div style="font-weight:600">'+((document.getElementById('f-g1')||{}).value||'—')+' ('+((document.getElementById('f-g1n')||{}).value||'?')+' goles)</div>'
@@ -1978,7 +1978,7 @@ function downloadPDF(){
     doc.text('NFQ WORLD CUP 2026',105,18,{align:'center'});
     doc.setTextColor(240,247,242);doc.setFontSize(14);doc.text('PORRA OFICIAL — FASE DE GRUPOS',105,27,{align:'center'});
     doc.setFontSize(10);doc.setTextColor(139,168,152);
-    doc.text('Participante: '+full,20,40);doc.text('Bizum: "Porra '+full+'"',20,47);doc.text('Registrado: '+new Date(p.ts).toLocaleString('es-ES'),20,54);
+    doc.text('Participante: '+full,20,40);doc.text('transferencia: "Porra '+full+'"',20,47);doc.text('Registrado: '+new Date(p.ts).toLocaleString('es-ES'),20,54);
     doc.setTextColor(0,192,115);doc.setFontSize(12);doc.text('PREMIOS INDIVIDUALES',20,66);
     doc.setTextColor(240,247,242);doc.setFontSize(9);
     doc.text('MVP: '+(p.mvp||'—'),20,73);doc.text('Goleador torneo: '+(p.gol1||'—')+' ('+p.gol1n+')',20,80);doc.text('Goleador Espana: '+(p.gol2||'—')+' ('+p.gol2n+')',20,87);
@@ -2076,7 +2076,7 @@ function renderAdmin(){
   if(pl)pl.innerHTML=PORRAS.length?PORRAS.map(function(p){
     var full=displayName(p.nombre+(p.apellidos?' '+p.apellidos:''));
     return '<div class="arow"><div><div style="font-weight:600;font-size:13px">'+full+'</div>'
-      +'<div style="font-size:11px;color:var(--t3)">Bizum: "Porra '+full+'" · '+new Date(p.ts).toLocaleDateString('es-ES')+'</div></div>'
+      +'<div style="font-size:11px;color:var(--t3)">transferencia: "Porra '+full+'" · '+new Date(p.ts).toLocaleDateString('es-ES')+'</div></div>'
       +'<span class="sbg '+(p.active?'a':'p')+'">'+(p.active?'ACTIVO':'PENDIENTE')+'</span>'
       +'<button class="btn '+(p.active?'bdanger':'bgold')+' bsm" onclick="toggleActive('+p.id+')">'+(p.active?'Desactivar':'✓ Activar')+'</button>'
       +'<button class="btn bdanger bsm" onclick="deletePorra('+p.id+')" title="Eliminar definitivamente">🗑️</button>'
