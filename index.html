@@ -398,7 +398,7 @@ footer span{color:var(--g)}
   </div>
 
 
-  <!-- BOTE — visible solo cuando empieza el mundial -->
+  <!-- BOTE — visible desde que arranca el mundial -->
   <div id="bote-wrap" style="display:none;max-width:1000px;margin:20px auto 0;padding:0 20px">
     <div style="background:var(--s1);border:1px solid var(--bd);border-radius:var(--rl);padding:16px 22px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px">
       <div>
@@ -408,15 +408,15 @@ footer span{color:var(--g)}
       <div style="display:flex;gap:20px;flex-wrap:wrap">
         <div style="text-align:center">
           <div style="font-family:var(--fd);font-size:22px;color:var(--gold)">50%</div>
-          <div style="font-size:11px;color:var(--t3)">🥇 1er premio · <strong id="p1-eur" style="color:var(--gold)">0€</strong></div>
+          <div style="font-size:11px;color:var(--t3)">🥇 1er · <strong id="p1-eur" style="color:var(--gold)">0€</strong></div>
         </div>
         <div style="text-align:center">
           <div style="font-family:var(--fd);font-size:22px;color:#B0B8C0">30%</div>
-          <div style="font-size:11px;color:var(--t3)">🥈 2do premio · <strong id="p2-eur" style="color:#B0B8C0">0€</strong></div>
+          <div style="font-size:11px;color:var(--t3)">🥈 2do · <strong id="p2-eur" style="color:#B0B8C0">0€</strong></div>
         </div>
         <div style="text-align:center">
           <div style="font-family:var(--fd);font-size:22px;color:#C87832">20%</div>
-          <div style="font-size:11px;color:var(--t3)">🥉 3er premio · <strong id="p3-eur" style="color:#C87832">0€</strong></div>
+          <div style="font-size:11px;color:var(--t3)">🥉 3er · <strong id="p3-eur" style="color:#C87832">0€</strong></div>
         </div>
       </div>
     </div>
@@ -798,12 +798,13 @@ footer span{color:var(--g)}
 <footer><p>⚽ NFQ World Cup Porra 2026 · <span>USA · México · Canadá</span> · 11 jun – 19 jul 2026</p></footer>
 <script>
 var MUNDIAL_STARTED = (Date.now() >= new Date('2026-06-11T19:00:00Z').getTime());
-var ELI_ACTIVE      = false; // set by smart_api.js checkEliActive()
+var ELI_ACTIVE      = false;
+var ELI_STARTED     = false; // true when first R16 match kicks off (set by smart_api checkEliActive)
 var PORRAS          = [];
 var API_IND         = {mvp:'',gol1:'',gol1n:0,gol2:'',gol2n:0,camp:'',sub:'',p3:'',p4:''};
 var API_GR_LIVE     = {};
 var API_LIVE_DATA   = null;
-var API_CACHE       = {grupos:{}, upcoming:[], yesterday:[]};
+var API_CACHE       = {grupos:{},upcoming:[],yesterday:[]};
 
 const GR = {
   A:{t:['México','Sudáfrica','Corea del Sur','Chequia'],m:[
@@ -915,66 +916,97 @@ function showRTab(btn,id){
 }
 
 // ═══════════════════════════════════════════════════════════
-// JUGADORES — para autocompletado
+// JUGADORES MUNDIAL 2026 — datos reales de convocatorias
 // ═══════════════════════════════════════════════════════════
 
 var SPAIN_PLAYERS = [
-  'Unai Simon','David Raya','Robert Sanchez',
-  'Dani Carvajal','Jesus Navas','Pedro Porro','Daniel Vivian',
-  'Robin Le Normand','Aymeric Laporte','Marc Cucurella','Grimaldo',
-  'Rodri','Fabian Ruiz','Pedri','Gavi','Mikel Merino','Martin Zubimendi',
-  'Lamine Yamal','Nico Williams','Ferran Torres','Dani Olmo',
-  'Alvaro Morata','Joselu','Bryan Gil','Ayoze Perez','Mikel Oyarzabal',
-  'Yeremy Pino','Pablo Sarabia','Santi Cazorla'
+  'Unai Simon','David Raya','Joan Garcia',
+  'Pedro Porro','Marcos Llorente','Marc Cucurella','Alex Grimaldo','Aymeric Laporte','Pau Cubarsi','Marc Pubill','Eric Garcia',
+  'Rodri','Martin Zubimendi','Fabian Ruiz','Pedri','Dani Olmo','Gavi','Alex Baena','Mikel Merino',
+  'Lamine Yamal','Nico Williams','Mikel Oyarzabal','Ferran Torres','Yeremi Pino','Victor Munoz','Borja Iglesias'
 ].sort(function(a,b){return a.localeCompare(b,'es');});
 
-var WORLD_STARS = [
-  // Francia
-  'Kylian Mbappe','Antoine Griezmann','Ousmane Dembele','Olivier Giroud',
-  'Marcus Thuram','Kingsley Coman','Eduardo Camavinga','Aurelien Tchouameni',
-  // Argentina
-  'Lionel Messi','Julian Alvarez','Lautaro Martinez','Angel Di Maria',
-  'Paulo Dybala','Rodrigo De Paul','Alexis Mac Allister',
-  // Brasil
-  'Vinicius Junior','Rodrygo','Endrick','Raphinha','Neymar',
-  'Lucas Paqueta','Bruno Guimaraes',
-  // Alemania
-  'Florian Wirtz','Jamal Musiala','Kai Havertz','Leroy Sane',
-  'Thomas Muller','Toni Kroos','Joshua Kimmich',
-  // Portugal
-  'Cristiano Ronaldo','Bruno Fernandes','Bernardo Silva','Rafael Leao',
-  'Joao Felix','Ruben Neves','Vitinha',
-  // Inglaterra
-  'Harry Kane','Jude Bellingham','Phil Foden','Bukayo Saka',
-  'Marcus Rashford','Declan Rice','Trent Alexander-Arnold',
-  // Holanda
-  'Virgil van Dijk','Memphis Depay','Cody Gakpo','Xavi Simons',
-  'Frenkie de Jong','Tijjani Reijnders',
-  // Belgica
-  'Romelu Lukaku','Kevin De Bruyne','Jeremy Doku',
-  // Italia
-  'Gianluigi Donnarumma','Federico Chiesa','Sandro Tonali',
-  // Uruguay
-  'Darwin Nunez','Federico Valverde','Ronald Araujo',
-  // Colombia
-  'James Rodriguez','Luis Diaz','Jhon Duran','Richard Rios',
-  // Marruecos
-  'Achraf Hakimi','Youssef En-Nesyri','Hakim Ziyech','Sofyan Amrabat',
-  // Mexico
-  'Hirving Lozano','Raul Jimenez','Santiago Gimenez',
-  // EEUU
-  'Christian Pulisic','Weston McKennie','Gio Reyna','Tyler Adams',
-  // Japon
-  'Takumi Minamino','Kaoru Mitoma','Ritsu Doan',
-  // Senegal
-  'Sadio Mane','Edouard Mendy','Ismaila Sarr',
-  // Corea del Sur
-  'Son Heung-min','Lee Kang-in',
-  // Espana (ya en lista arriba pero añadir para MVP)
-  'Lamine Yamal','Pedri','Rodri','Alvaro Morata','Dani Olmo',
-  'Fabian Ruiz','Nico Williams','Mikel Merino'
-].filter(function(v,i,a){return a.indexOf(v)===i;}) // deduplicate
- .sort(function(a,b){return a.localeCompare(b,'es');});
+var WORLD_PLAYERS = (function(){
+  var raw = [
+    // SUDÁFRICA
+    'Ronwen Williams','Ricardo Goss','Sipho Chaine','Khuliso Mudau','Nkosinathi Sibisi','Ime Okon','Khulumani Ndamane','Aubrey Modiba','Samukelo Kabini','Thabang Matuludi','Olwethu Makhanya','Kamogelo Sebelebele','Bradley Cross','Mbekezeli Mbokazi','Teboho Mokoena','Thalente Mbatha','Sphephelo Sithole','Jayden Adams','Oswin Appollis','Iqraam Rayners','Tshepang Moremi','Relebohile Mofokeng','Evidence Makgopa','Themba Zwane','Lyle Foster','Thapelo Maseko',
+    // COREA DEL SUR
+    'Kim Seung-Gyu','Song Bum Keun','Jo Hyeon-Woo','Kim Moon-Hwan','Kim Min-Jae','Kim Tae-Hwan','Park Jin-Seob','Seol Young-Woo','Jens Castrop','Lee Ki-Hyuk','Lee Tae-Seok','Lee Han-Beom','Cho Yumin','Kim Jin-Gyu','Bae Jun-Ho','Paik Seung-Ho','Yang Hyun-Jun','Eom Ji-Sung','Lee Kang-In','Lee Dong-Gyeong','Lee Jae-Sung','Hwang In-Beom','Hwang Hee-Chan','Son Heung-Min','Oh Hyeon-Gyu','Cho Gue-Sung',
+    // BOSNIA
+    'Nikola Vasilj','Martin Zlomislic','Osman Hadzikic','Sead Kolasinac','Amar Dedic','Nihad Mujakic','Nikola Katic','Tarik Muharemovic','Stjepan Radeljic','Dennis Hadzikadunic','Nidal Celik','Amir Hadziahmetovic','Ivan Sunjic','Ivan Basic','Dzenis Burnic','Ermin Mahmic','Benjamin Tahirovic','Amar Memic','Armin Gigovic','Kerim Alajbegovic','Esmir Bajraktarevic','Ermedin Demirovic','Jovo Lukic','Samed Bazdar','Haris Tabakovic','Edin Dzeko',
+    // SUIZA
+    'Marvin Keller','Gregor Kobel','Yvon Mvogo','Manuel Akanji','Aurele Amenda','Eray Comert','Nico Elvedi','Luca Jaquez','Miro Muheim','Ricardo Rodriguez','Silvan Widmer','Granit Xhaka','Denis Zakaria','Michel Aebischer','Christian Fassnacht','Remo Freuler','Ardon Jashari','Johan Manzambi','Fabian Rieder','Djibril Sow','Zeki Amdouni','Breel Embolo','Cedric Itten','Dan Ndoye','Noah Okafor','Ruben Vargas',
+    // BRASIL
+    'Alisson','Ederson','Weverton','Marquinhos','Gabriel Magalhaes','Bremer','Ibanez','Leo Pereira','Wesley','Danilo','Alex Sandro','Douglas Santos','Casemiro','Bruno Guimaraes','Fabinho','Lucas Paqueta','Vinicius Jr','Raphinha','Matheus Cunha','Luiz Henrique','Igor Thiago','Endrick','Martinelli','Rayan','Neymar',
+    // MARRUECOS
+    'Yassine Bounou','Munir El Kajoui','Ahmed Reda Tagnaouti','Achraf Hakimi','Nayef Aguerd','Noussair Mazraoui','Anass Salah-Eddine','Chadi Riad','Youssef Belammari','Issa Diop','Redouane Hahlal','Zakaria El Ouahdi','Sofyan Amrabat','Ismael Saibari','Neil El Aynaoui','Bilal El Khannouss','Azzedine Ounahi','Bouaddi','Samir El Mourabet','Brahim Diaz','Chemsdine Talbi','Ayoub El Kaabi','Soufiane Rahimi','Abde Ezzalzouli','Ayoube Amaimouni','Yassine Gessime',
+    // HAITÍ
+    'Johnny Placide','Alexandre Pierre','Josue Duverger','Carlens Arcus','Wilguens Paugain','Duke Lacroix','Martin Experience','JK Duverne','Ricardo Ade','Hannes Delcroix','Keeto Thermoncy','Leverton Pierre','Carl-Fred Sainthe','Jean-Jacques Danley','Jeanricner Bellegarde','Pierre Woodenski','Dominique Simon','Louicius Deedson','Ruben Providence','Josue Casimir','Derrick Etienne','Wilson Isidor','Duckens Nazon','Frantzdy Pierrot','Yassin Fortune','Lenny Joseph',
+    // ESCOCIA
+    'Craig Gordon','Angus Gunn','Liam Kelly','Grant Hanley','Jack Hendry','Aaron Hickey','Dom Hyam','Scott McKenna','Nathan Patterson','Anthony Ralston','Andy Robertson','John Souttar','Kieran Tierney','Ryan Christie','Findlay Curtis','Lewis Ferguson','Ben Gannon-Doak','Billy Gilmour','John McGinn','Kenny McLean','Scott McTominay','Che Adams','Lyndon Dykes','George Hirst','Lawrence Shankland','Ross Stewart',
+    // EE.UU.
+    'Matt Freese','Matt Turner','Chris Brady','Max Arfsten','Sergino Dest','Alex Freeman','Mark McKenzie','Tim Ream','Chris Richards','Antonee Robinson','Miles Robinson','Joe Scally','Auston Trusty','Tyler Adams','Sebastian Berhalter','Weston McKennie','Cristian Roldan','Brenden Aaronson','Christian Pulisic','Gio Reyna','Malik Tillman','Tim Weah','Alejandro Zendejas','Folarin Balogun','Ricardo Pepi','Haji Wright',
+    // ALEMANIA
+    'Manuel Neuer','Oliver Baumann','Alexander Nubel','Waldemar Anton','Nathaniel Brown','Pascal Gross','Joshua Kimmich','David Raum','Antonio Rudiger','Nico Schlotterbeck','Jonathan Tah','Malick Thiaw','Aleksandar Pavlovic','Jamal Musiala','Nadiem Amiri','Jamie Leweling','Felix Nmecha','Angelo Stiller','Leon Goretzka','Lennart Karl','Florian Wirtz','Deniz Undav','Kai Havertz','Maximilian Beier','Leroy Sane','Nick Woltemade',
+    // CURAZAO
+    'Tyrick Bodak','Trevor Doornbusch','Eloy Room','Riechedly Bazoer','Joshua Brenet','Roshon Van Eijma','Sherel Floranus','Deveron Fonville','Jurien Gaari','Armando Obispo','Shurandy Sambo','Juninho Bacuna','Leandro Bacuna','Livano Comenencia','Kevin Felida','Arjany Martha','Tyrese Noslin','Godfried Roemeratoe','Jeremy Antonisse','Tahith Chong','Kenji Gorre','Sontje Hansen','Gervane Kastaneer','Brandley Kuwas','Jurgen Locadia','Jearl Margaritha',
+    // COSTA DE MARFIL
+    'Yahia Fofana','Mohamed Kone','Alban Lafont','Emmanuel Agbadou','Clement Akpa','Ousmane Diomande','Guela Doue','Ghislain Konan','Odilon Kossounou','Evan NDicka','Wilfried Singo','Seko Fofana','Parfait Guiagon','Christ Inao Oulai','Franck Kessie','Ibrahim Sangare','Jean Michael Seri','Simon Adingra','Ange-Yoan Bonny','Amad Diallo','Oumar Diakite','Yan Diomande','Evann Guessand','Nicolas Pepe','Bazoumana Toure','Elye Wahi',
+    // PAÍSES BAJOS
+    'Bart Verbruggen','Robin Roefs','Mark Flekken','Nathan Ake','Virgil van Dijk','Jorrel Hato','Jan Paul van Hecke','Denzel Dumfries','Jurrien Timber','Micky van de Ven','Ryan Gravenberch','Frenkie de Jong','Marten de Roon','Tijjani Reijnders','Teun Koopmeiners','Noa Lang','Mats Wieffer','Quinten Timber','Crysencio Summerville','Guus Til','Brian Brobbey','Memphis Depay','Cody Gakpo','Justin Kluivert','Donyell Malen','Wout Weghorst',
+    // JAPÓN
+    'Zion Suzuki','Keisuke Osako','Tomoki Hayakawa','Yuto Nagamoto','Shogo Taniguchi','Ko Itakura','Takehiro Tomiyasu','Ayumu Seko','Yukinari Sugawara','Hiroki Ito','Junnosuke Suzuki','Tsuyoshi Watanabe','Kaishu Sano','Wataru Endo','Ao Tanaka','Daichi Kamada','Junya Ito','Kaito Nakamura','Daizen Maeda','Koki Ogawa','Takefusa Kubo','Yuito Suzuki','Kento Shiogai','Keisuke Goto','Ritsu Doan','Ayase Ueda',
+    // SUECIA
+    'Viktor Johansson','Kristoffer Nordfeldt','Jacob Widell Zetterstrom','Hjalmar Ekdal','Gabriel Gudmundsson','Isak Hien','Emil Holm','Gustaf Lagerbielke','Victor Nilsson Lindelof','Eric Smith','Carl Starfelt','Elliot Stroud','Daniel Svensson','Yasin Ayari','Lucas Bergvall','Alexander Bernhardsson','Jesper Karlstrom','Ken Sema','Mattias Svanberg','Besfort Zeneli','Taha Ali','Anthony Elanga','Viktor Gyokeres','Alexander Isak','Gustaf Nilsson','Benjamin Nygren',
+    // TÚNEZ
+    'Aymen Dahmen','A. Chamakh','Sabri Ben Hassen','Van Valery','Moutaz Neffati','Dylan Bronn','Montassar Talbi','Omar Rekik','Adem Arous','Raed Chikhaoui','Ali Abdi','MA Ben Hmida','Ellyes Skhiri','M. Hadj Mahmoud','Rani Khedira','Anis Ben Slimane','Mortadha Ben Ouanes','Ismael Gharbi','Hannibal Mejbri','Khalil Ayari','Elias Achouri','Elias Saad','Firas Chaouat','Hazem Mastouri','Rayan Elloumi','Sebastian Tounekti',
+    // BÉLGICA
+    'Thibaut Courtois','Senne Lammens','Mike Penders','Zeno Debast','Arthur Theate','Koni de Winter','Brandon Mechele','Nathan Ngoy','Thomas Meunier','Timothy Castagne','Maxim de Cuyper','Joaquin Seys','Kevin de Bruyne','Amadou Onana','Youri Tielemans','Hans Vanaken','Nicolas Raskin','Axel Witsel','Jeremy Doku','Leandro Trossard','Alexis Saelemaekers','Dodi Lukebakio','Romelu Lukaku','Charles de Ketelaere','Matias Fernandez-Pardo','Diego Moreira',
+    // EGIPTO
+    'Mohamed El Shenawy','Mostafa Shobeir','Al-Mahdy Soliman','Mohamed Alaa','Mohamed Hany','Tarek El Ala','Hamdi Fathy','Ramy Rabia','Yasser Ibrahim','Hossam Abdel-Maguid','Mohamed Abdelmonem','Ahmed Fotouh','Karim Hafez','Marwan Attia','Mohand Lashin','Nabil Emad Dunga','Mahmoud Saber','Ahmed Sayed Zizo','Imam Ashour','Mostafa Abdel-Raouf Ziko','Mahmoud Trezeguet','Ibrahim Ade','Haithem Hassan','Mohamed Salah','Omar Marmoush','Hamza Abdelkarim',
+    // NUEVA ZELANDA
+    'Max Crocombe','Alex Paulsen','Michael Woud','Tyler Bindon','Michael Boxall','Liberato Cacace','Francis De Vries','Callan Elliot','Tim Payne','Nando Pijnaker','Tommy Smith','Finn Surman','Lachlan Bayliss','Joe Bell','Alex Rufer','Marko Stamenic','Ryan Thomas','Kosta Barbarouses','Matt Garbett','Eli Just','Callum McCowatt','Ben Old','Jesse Randall','Sarpreet Singh','Ben Waine','Chris Wood',
+    // ESPAÑA (ya en SPAIN_PLAYERS pero añadimos para búsqueda global)
+    'Unai Simon','David Raya','Joan Garcia','Pedro Porro','Marcos Llorente','Marc Cucurella','Alex Grimaldo','Aymeric Laporte','Pau Cubarsi','Marc Pubill','Eric Garcia','Rodri','Martin Zubimendi','Fabian Ruiz','Pedri','Dani Olmo','Gavi','Alex Baena','Mikel Merino','Lamine Yamal','Nico Williams','Mikel Oyarzabal','Ferran Torres','Yeremi Pino','Victor Munoz','Borja Iglesias',
+    // CABO VERDE
+    'Josimar Dias','Marcio da Rosa','Carlos Santos','Steven Moreira','Wagner Pina','Joao Paulo Fernandes','Sidny Lopes Cabral','Logan Costa','Roberto Lopes','Kelvin Pires','Ianique Tavares','Edilson Borges','Jamiro Monteiro','Telmo Arcanjo','Yannick Semedo','Laros Duarte','Deroy Duarte','Kevin Pina','Ryan Mendes','Willy Semedo','Garry Rodrigues','Jovane Cabral','Nuno da Costa','Dailon Livramento','Gilson Benchimol','Helio Varela',
+    // URUGUAY
+    'Sergio Rochet','Fernando Muslera','Santiago Mele','Guillermo Varela','Ronald Araujo','Jose Maria Gimenez','Santiago Bueno','Sebastian Caceres','Mathias Olivera','Joaquin Piquerez','Matias Vina','Manuel Ugarte','Emiliano Martinez','Rodrigo Bentancur','Federico Valverde','Agustin Canobbio','Juan Manuel Sanabria','Giorgian De Arrascaeta','Nicolas de la Cruz','Rodrigo Zalazar','Facundo Pellistri','Maximiliano Araujo','Brian Rodriguez','Rodrigo Aguirre','Federico Vinas','Darwin Nunez',
+    // FRANCIA
+    'Mike Maignan','Brice Samba','Robin Risser','Jules Kounde','Malo Gusto','William Saliba','Dayot Upamecano','Ibrahima Konate','Lucas Hernandez','Theo Hernandez','Lucas Digne','Maxence Lacroix','Aurelien Tchouameni','Adrien Rabiot','N\'Golo Kante','Warren Zaire-Emery','Manu Kone','Kylian Mbappe','Michael Olise','Ousmane Dembele','Desire Doue','Bradley Barcola','Marcus Thuram','Maghnes Akliouche','Jean-Philippe Mateta','Rayan Cherki',
+    // SENEGAL
+    'Edouard Mendy','Mory Diaw','Yehvann Diouf','Krepin Diatta','Antoine Mendy','Kalidou Koulibaly','El Hadji Malick Diouf','Mamadou Sarr','Moussa Niakhate','Moustapha Mbow','Abdoulaye Seck','Ismail Jakobs','Ilay Camara','Idrissa Gana Gueye','Pape Gueye','Lamine Camara','Habib Diarra','Pathe Ciss','Pape Matar Sarr','Bara Sapoko Ndiaye','Sadio Mane','Ismaila Sarr','Iliman Ndiaye','Assane Diao','Ibrahim Mbaye','Nicolas Jackson','Bamba Dieng','Cherif Ndiaye',
+    // NORUEGA
+    'Orjan Nyland','Sander Tangvik','Egil Selvik','Kristoffer Ajer','David Moller Wolfe','Leo Ostigard','Fredrik Bjorkan','Marcus Pedersen','Torbjorn Heggem','Sondre Langas','Henrik Falchener','Julian Ryerson','Morter Thorsby','Patrick Berg','Sander Berge','Martin Odegaard','Fredrik Aursnes','Kristian Thorstvedt','Thelonious Aasgaard','Antonio Nusa','Andreas Schjelderup','Oscar Bob','Jens Petter Hauge','Alexander Sorloth','Erling Haaland','Jorgen Strand Larsen',
+    // ARGENTINA
+    'Dibu Martinez','Geronimo Rulli','Juan Musso','Cristian Romero','Otamendi','Nahuel Molina','Nicolas Tagliafico','Gonzalo Montiel','Leonardo Balerdi','Lisandro Martinez','Facundo Medina','Enzo Fernandez','Rodrigo de Paul','Alexis Mac Allister','Leandro Paredes','Exequiel Palacios','Valentin Barco','Giovani Lo Celso','Lionel Messi','Julian Alvarez','Lautaro Martinez','Jose Manuel Lopez','Nico Gonzalez','Thiago Almada','Giuliano Simeone','Nico Paz',
+    // ARGELIA
+    'Luca Zidane','Oussama Benbot','Melvin Mastil','Abdelatif Ramdane','Rafik Belghali','Samir Chergui','Rayan Ait-Nouri','Jaouen Hadjam','Aissa Mandi','Ramy Bensebaini','Zineddine Belaid','Achref Abada','Mohamed Amine Tougai','Nabil Bentaleb','Hicham Boudaoui','Houssem Aouar','Fares Chaibi','Ibrahim Maza','Yacine Titraoui','Ramiz Zerrouki','Mohamed Amine Amoura','Nadhir Benbouali','Adil Boulbina','Fares Ghedjemis','Amine Gouiri','Anis Hadj Moussa','Riyad Mahrez',
+    // AUSTRIA
+    'Patrick Pentz','Alexander Schlager','Florian Wiegele','David Affengruber','David Alaba','Kevin Danso','Marco Friedl','Philipp Lienhart','Phillipp Mwene','Stefan Posch','Alexander Prass','Michael Svoboda','Christoph Baumgartner','Carney Chukwuemeka','Florian Grillitsch','Konrad Laimer','Marcel Sabitzer','Xavier Schlager','Romano Schimid','Alessandro Schoph','Nicolas Seiwald','Paul Wanner','Patrick Wimmer','Marko Arnautovic','Michael Gregoritsch','Sasa Kalajdzic',
+    // PORTUGAL
+    'Diogo Costa','Jose Sa','Rui Silva','Ricardo Velho','Diogo Dalot','Matheus Nunes','Nelson Semedo','Joao Cancelo','Nuno Mendes','Goncalo Inacio','Renato Veiga','Ruben Dias','Tomas Araujo','Ruben Neves','Samu Costa','Joao Neves','Vitinha','Bruno Fernandes','Bernardo Silva','Joao Felix','Francisco Trincao','Francisco Conceicao','Pedro Neto','Rafael Leao','Goncalo Guedes','Goncalo Ramos','Cristiano Ronaldo',
+    // RD CONGO
+    'Timothy Fayulu','Lionel Mpasi','Mattieu Epolo','Aaron Wan-Bissaka','Gedeon Kalulu','Chancel Mbemba','Steve Kapuadi','Axel Tuanzebe','Dylan Batubinsika','Rocky Bushiri','Arthur Masuku','Joris Kayembe','Samuel Moutoussamy','Ngal\'Ayel Mukau','Gael Kakuta','Charles Pickel','Noah Sadiki','Edo Kayembe','Theo Bongonda','Nathanael Mbuku','Cedric Bakambu','Simon Banza','Fiston Mayele','Brian Cipenga','Yoane Wissa','Meschack Elia',
+    // COLOMBIA
+    'Alvaro Montero','Camilo Vargas','David Ospina','Daniel Munoz','Santiago Arias','Davinson Sanchez','Jhon Lucumi','Yerry Mina','Willer Ditta','Deiver Machado','Johan Mojica','Gustavo Puerta','James Rodriguez','Jefferson Lerma','Jhon Arias','Jorge Carrascal','Juan Fernando Quintero','Richard Rios','Kevin Castano','Jaminton Campaz','Juan Portilla','Luis Diaz','Luis Suarez','Jhon Cordoba','Carlos Gomez','Juan Camilo Hernandez',
+    // INGLATERRA
+    'Jordan Pickford','Dean Henderson','James Trafford','Reece James','Tino Livramento','John Stones','Marc Guéhi','Ezri Konsa','Dan Burn','Jarell Quansah','Nico O\'Reilly','Djed Spence','Jordan Henderson','Elliot Anderson','Declan Rice','Kobbie Mainoo','Eberechi Eze','Jude Bellingham','Morgan Rogers','Bukayo Saka','Noni Madueke','Marcus Rashford','Anthony Gordon','Harry Kane','Ollie Watkins','Ivan Toney',
+    // CROACIA
+    'Dominic Livakovic','Dominik Kotarski','Ivor Pandur','Josko Gvardiol','Duje Caleta-Car','Josip Sutalo','Josip Stanisic','Marin Pongracic','Martin Erlic','Luka Vuskovic','Luka Modric','Mateo Kovacic','Mario Pasalic','Nikola Vlasic','Luka Sucic','Martin Baturina','Kristijan Jakic','Petar Sucic','Nikola Moro','Toni Fruk','Ivan Perisic','Andrej Kramaric','Ante Budimir','Marco Pasalic','Petar Musa','Igor Matanovic',
+    // PANAMÁ
+    'Orlando Mosquera','Luis Mejia','Cesar Samudio','Cesar Blackman','Jorge Gutierrez','Amir Murillo','Fidel Escobar','Andres Andrade','Edgardo Farina','Jose Cordoba','Eric Davis','Jiovany Ramos','Roderick Miller','Anibal Godoy','Adalberto Carrasquilla','Carlos Harvey','Cristian Martinez','Jose Luis Rodriguez','Cesar Yanis','Yoel Barcenas','Alberto Quintero','Azarias Londono','Ismael Diaz','Cecilio Waterman','Jose Fajardo','Tomas Rodriguez'
+  ];
+
+  // Deduplicate and sort
+  var seen = {};
+  return raw.filter(function(p){
+    var k = p.toLowerCase();
+    if(seen[k]) return false;
+    seen[k] = true;
+    return true;
+  }).sort(function(a,b){return a.localeCompare(b,'es');});
+})();
 
 // ═══════════════════════════════════════════════════════════
 // SMART API — caché inteligente según estado del partido
@@ -1258,10 +1290,11 @@ function scheduleRefresh() {
 }
 
 // ═══════════════════════════════════════════════════════════
-// NFQ WORLD CUP 2026 — MAIN JS v4 FINAL
+// NFQ WORLD CUP 2026 — MAIN JS v5 FINAL
 // ═══════════════════════════════════════════════════════════
 
 var ADMIN_PW    = 'nfq2026';
+var PORRAS      = [];
 var SB_POSTS    = [];
 var prevRk      = [];
 var koState     = {};
@@ -1271,10 +1304,17 @@ var LOCAL_VOTES = {};
 try { LOCAL_VOTES = JSON.parse(localStorage.getItem('nfq_votes')||'{}'); } catch(e) {}
 function saveVotes(){ try{localStorage.setItem('nfq_votes',JSON.stringify(LOCAL_VOTES));}catch(e){} }
 
-var WC_START_MS = new Date('2026-06-11T19:00:00Z').getTime();
-var WC_END_MS   = new Date('2026-07-19T21:00:00Z').getTime();
-var DEADLINE_MS = new Date('2026-06-10T22:00:00Z').getTime();
-var PAGES       = ['inicio','participar','instrucciones','ranking','resultados','vestuario','admin','eliminatoria'];
+var WC_START_MS  = new Date('2026-06-11T19:00:00Z').getTime();
+var WC_END_MS    = new Date('2026-07-19T23:59:00Z').getTime();
+var DEADLINE_MS  = new Date('2026-06-10T22:00:00Z').getTime();
+var PAGES        = ['inicio','participar','instrucciones','ranking','resultados','vestuario','admin','eliminatoria'];
+
+// ── Name matching — flexible ──────────────────────────────
+function namesMatch(a, b) {
+  if(!a||!b) return false;
+  var na=normStr(a), nb=normStr(b);
+  return na===nb || na.indexOf(nb)!==-1 || nb.indexOf(na)!==-1;
+}
 
 // ── Helpers ───────────────────────────────────────────────
 function displayName(s){ return (s||'').replace(/\b\w/g,function(c){return c.toUpperCase();}); }
@@ -1311,16 +1351,41 @@ function showRTab(btn,id){
   document.getElementById(id).className='rpanel on'; document.getElementById(id).style.display='block';
   btn.className='rtab on';
 }
-function handleHash(){
-  var h=location.hash.replace('#','');
-  if(h&&PAGES.indexOf(h)!==-1)goPage(h);
-}
+function handleHash(){ var h=location.hash.replace('#',''); if(h&&PAGES.indexOf(h)!==-1)goPage(h); }
 window.addEventListener('hashchange',handleHash);
+
+// ── Player search ─────────────────────────────────────────
+function setupSearch(inputId, players) {
+  var input = document.getElementById(inputId); if(!input) return;
+  var wrap = input.parentElement;
+  var dd = document.createElement('div');
+  dd.className = 'player-dd';
+  dd.style.cssText = 'position:absolute;top:100%;left:0;right:0;background:var(--s2);border:1px solid var(--bd);border-radius:0 0 var(--r) var(--r);z-index:100;max-height:220px;overflow-y:auto;display:none;box-shadow:0 8px 24px rgba(0,0,0,.4)';
+  wrap.style.position = 'relative';
+  wrap.appendChild(dd);
+
+  input.addEventListener('input', function(){
+    var val = normStr(this.value);
+    if(val.length < 2){ dd.style.display='none'; return; }
+    var matches = players.filter(function(p){ return normStr(p).indexOf(val) !== -1; }).slice(0,10);
+    if(!matches.length){ dd.style.display='none'; return; }
+    dd.innerHTML = matches.map(function(p){
+      return '<div style="padding:9px 14px;cursor:pointer;font-size:13px;border-bottom:1px solid var(--bd2);color:var(--t1)" '
+        +'onmousedown="(function(){document.getElementById(\''+inputId+'\').value=\''+p.replace(/'/g,"\\'")+'\';})()">'
+        +p+'</div>';
+    }).join('');
+    dd.style.display = 'block';
+  });
+  input.addEventListener('blur', function(){ setTimeout(function(){ dd.style.display='none'; }, 200); });
+  input.addEventListener('focus', function(){
+    if(normStr(this.value).length >= 2) this.dispatchEvent(new Event('input'));
+  });
+}
 
 // ── Countdown ─────────────────────────────────────────────
 function updateCD(){
   var diff=WC_START_MS-Date.now();
-  if(diff<=0){ ['cd-d','cd-h','cd-m','cd-s'].forEach(function(k){var e=document.getElementById(k);if(e)e.textContent='00';}); return; }
+  if(diff<=0){['cd-d','cd-h','cd-m','cd-s'].forEach(function(k){var e=document.getElementById(k);if(e)e.textContent='00';});return;}
   var v=[Math.floor(diff/86400000),Math.floor(diff%86400000/3600000),Math.floor(diff%3600000/60000),Math.floor(diff%60000/1000)];
   ['cd-d','cd-h','cd-m','cd-s'].forEach(function(k,i){var e=document.getElementById(k);if(e)e.textContent=String(v[i]).padStart(2,'0');});
 }
@@ -1329,9 +1394,7 @@ function updateCD(){
 function updateBote(){
   var activos=PORRAS.filter(function(p){return p.active;}).length;
   var total=activos*10;
-  // Admin panel
   var ab=document.getElementById('adm-bote'); if(ab)ab.textContent=total+'€';
-  // Home bote bar — only show € after mundial starts
   var boteWrap=document.getElementById('bote-wrap');
   if(!boteWrap)return;
   if(!MUNDIAL_STARTED){ boteWrap.style.display='none'; return; }
@@ -1344,13 +1407,13 @@ function updateBote(){
 
 // ── Home ─────────────────────────────────────────────────
 function initHome(){
-  var liveEl   = document.getElementById('home-live');
-  var cdWrap   = document.getElementById('cd-wrap');
-  var btnP     = document.getElementById('btn-participar');
-  var navP     = document.getElementById('nav-participar');
-  var eliPromo = document.getElementById('eli-promo');
-  var navEli   = document.getElementById('nav-eli');
-  var worldEnded = Date.now() > WC_END_MS;
+  var liveEl=document.getElementById('home-live');
+  var cdWrap=document.getElementById('cd-wrap');
+  var btnP=document.getElementById('btn-participar');
+  var navP=document.getElementById('nav-participar');
+  var eliPromo=document.getElementById('eli-promo');
+  var navEli=document.getElementById('nav-eli');
+  var worldEnded=Date.now()>WC_END_MS;
 
   if(worldEnded){ renderFinalScreen(); return; }
 
@@ -1364,10 +1427,8 @@ function initHome(){
     if(liveEl)liveEl.style.display='none';
     if(cdWrap)cdWrap.style.display='flex';
   }
-
-  if(eliPromo)eliPromo.style.display = ELI_ACTIVE ? 'block' : 'none';
-  if(navEli)navEli.style.display = ELI_ACTIVE ? 'inline-flex' : 'none';
-
+  if(eliPromo)eliPromo.style.display=ELI_ACTIVE?'block':'none';
+  if(navEli)navEli.style.display=ELI_ACTIVE?'inline-flex':'none';
   if(Date.now()>DEADLINE_MS){
     var pc=document.getElementById('part-closed'),po=document.getElementById('part-open');
     if(pc)pc.style.display='block'; if(po)po.style.display='none';
@@ -1395,15 +1456,14 @@ function renderFinalScreen(){
         +'<div style="font-weight:700;font-size:15px">'+displayName(p.nombre+(p.apellidos?' '+p.apellidos:''))+'</div>'
         +'<div style="font-family:var(--fm);font-size:14px;color:var(--g);margin-top:4px">'+p.pts.total+' pts</div>'
       +'</div>';
-    }).join('')
-    +'</div></div>';
+    }).join('')+'</div></div>';
   var fi=document.getElementById('final-logo'),tl=document.getElementById('tl');
   if(fi&&tl)fi.src=tl.src;
 }
 
 // ── Home live ─────────────────────────────────────────────
 function renderHomeLive(){
-  var todayEl=document.getElementById('home-today'), ayerEl=document.getElementById('home-ayer');
+  var todayEl=document.getElementById('home-today'),ayerEl=document.getElementById('home-ayer');
   if(!todayEl)return;
   var todayHtml='';
   if(typeof API_LIVE_DATA!=='undefined'&&API_LIVE_DATA){
@@ -1441,25 +1501,24 @@ function buildMatchCard(home,away,sh,sa,status,timeStr,goals,pctData,g,i){
 function calcPct(g,i){
   var active=PORRAS.filter(function(p){return p.active;});
   if(!active.length)return null;
-  var k=g+'_'+i, total=active.filter(function(p){return p.gr&&p.gr[k];}).length;
+  var k=g+'_'+i,total=active.filter(function(p){return p.gr&&p.gr[k];}).length;
   if(!total)return null;
   var c1=active.filter(function(p){return p.gr&&p.gr[k]==='1';}).length;
   var cx=active.filter(function(p){return p.gr&&p.gr[k]==='x';}).length;
   var c2=active.filter(function(p){return p.gr&&p.gr[k]==='2';}).length;
-  return {h:Math.round(c1/total*100),x:Math.round(cx/total*100),a:Math.round(c2/total*100)};
+  return{h:Math.round(c1/total*100),x:Math.round(cx/total*100),a:Math.round(c2/total*100)};
 }
 
 function renderHomeStats(){
   var el=document.getElementById('home-stats'); if(!el)return;
   var active=PORRAS.filter(function(p){return p.active;});
   if(!active.length){el.innerHTML='<div style="font-size:13px;color:var(--t3)">Sin datos</div>';return;}
-  var camps={};
-  active.forEach(function(p){if(p.camp)camps[p.camp]=(camps[p.camp]||0)+1;});
+  var camps={};active.forEach(function(p){if(p.camp)camps[p.camp]=(camps[p.camp]||0)+1;});
   var topC=Object.entries(camps).sort(function(a,b){return b[1]-a[1];})[0]||null;
-  var liveInfo=(typeof API_LIVE_DATA!=='undefined'&&API_LIVE_DATA)?'🔴 En directo: <strong style="color:var(--red)">'+API_LIVE_DATA.home+' '+API_LIVE_DATA.h+'-'+API_LIVE_DATA.a+' '+API_LIVE_DATA.away+' ('+API_LIVE_DATA.min+'\')</strong>':'';
+  var liveInfo=(typeof API_LIVE_DATA!=='undefined'&&API_LIVE_DATA)?'🔴 <strong style="color:var(--red)">'+API_LIVE_DATA.home+' '+API_LIVE_DATA.h+'-'+API_LIVE_DATA.a+' '+API_LIVE_DATA.away+' ('+API_LIVE_DATA.min+'\')</strong>':'';
   el.innerHTML='<div style="display:grid;gap:9px;font-size:13px">'
     +(topC?'<div>🏆 Campeón más apostado: <strong style="color:var(--g)">'+topC[0]+'</strong> ('+topC[1]+' votos)</div>':'')
-    +(liveInfo?'<div>'+liveInfo+'</div>':'')
+    +(liveInfo?'<div>🔴 En directo: '+liveInfo+'</div>':'')
     +'<div>👥 Activos: <strong style="color:var(--g)">'+active.length+'</strong></div>'
     +'<button class="btn bg bsm" style="width:100%;justify-content:center;margin-top:4px" onclick="goPage(\'resultados\')">Ver resultados →</button></div>';
 }
@@ -1495,7 +1554,7 @@ function buildResults(){
 
 function showMatchDetail(g,i){
   var data=GR[g]; if(!data)return;
-  var idx=parseInt(i), m=data.m[idx], k=g+'_'+idx;
+  var idx=parseInt(i),m=data.m[idx],k=g+'_'+idx;
   var res=(typeof API_GR_LIVE!=='undefined')?API_GR_LIVE[k]:null;
   var isLive=(typeof API_LIVE_DATA!=='undefined'&&API_LIVE_DATA&&API_LIVE_DATA.key===k);
   if(isLive)res={h:API_LIVE_DATA.h,a:API_LIVE_DATA.a,goals:API_LIVE_DATA.goals};
@@ -1503,27 +1562,17 @@ function showMatchDetail(g,i){
   var pctData=calcPct(g,idx);
   var active=PORRAS.filter(function(p){return p.active;});
   var acertaron='';
-  if(res){
-    var real=res.h>res.a?'1':res.h===res.a?'x':'2';
-    acertaron=active.filter(function(p){return p.gr&&p.gr[k]===real;}).map(function(p){return displayName(p.nombre+(p.apellidos?' '+p.apellidos:''));}).join(', ');
-  }
+  if(res){var real=res.h>res.a?'1':res.h===res.a?'x':'2';acertaron=active.filter(function(p){return p.gr&&p.gr[k]===real;}).map(function(p){return displayName(p.nombre+(p.apellidos?' '+p.apellidos:''));}).join(', ');}
   var html='<div class="mdt">Grupo '+g+' · '+m.h+' vs '+m.a+'</div><div class="mds">'+m.d+'</div>'
     +'<div style="display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:10px;margin:16px 0;text-align:center">'
     +'<div style="font-size:15px;font-weight:700">'+m.h+'</div>'
-    +'<div>'+(isLive?'<div class="liveb" style="justify-content:center;margin-bottom:4px"><div class="livd"></div>'+API_LIVE_DATA.min+'\'</div>':'')
-    +'<div style="font-family:var(--fd);font-size:36px;color:var(--g);letter-spacing:2px">'+(res?res.h+' - '+res.a:'vs')+'</div></div>'
+    +'<div>'+(isLive?'<div class="liveb" style="justify-content:center;margin-bottom:4px"><div class="livd"></div>'+API_LIVE_DATA.min+'\'</div>':'')+'<div style="font-family:var(--fd);font-size:36px;color:var(--g);letter-spacing:2px">'+(res?res.h+' - '+res.a:'vs')+'</div></div>'
     +'<div style="font-size:15px;font-weight:700">'+m.a+'</div></div>';
   if(goals.length)html+='<div class="card" style="padding:12px 15px;margin-bottom:12px"><div style="font-size:10px;color:var(--t3);margin-bottom:8px;text-transform:uppercase;letter-spacing:1px">Goleadores</div>'
     +goals.map(function(gl){return '<div style="font-size:13px;color:var(--t2);margin-bottom:4px">⚽ <strong style="color:var(--t1)">'+gl.p+'</strong> ('+gl.t+') '+gl.m+'\'</div>';}).join('')+'</div>';
   if(pctData)html+='<div class="card" style="padding:12px 15px;margin-bottom:12px"><div style="font-size:10px;color:var(--t3);margin-bottom:8px;text-transform:uppercase;letter-spacing:1px">Predicciones ('+active.length+')</div>'
-    +'<div style="display:flex;height:20px;border-radius:4px;overflow:hidden;margin-bottom:8px">'
-    +'<div style="width:'+pctData.h+'%;background:var(--g);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#000">'+(pctData.h>12?pctData.h+'%':'')+'</div>'
-    +'<div style="width:'+pctData.x+'%;background:var(--gold);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#000">'+(pctData.x>12?pctData.x+'%':'')+'</div>'
-    +'<div style="width:'+pctData.a+'%;background:var(--blue);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff">'+(pctData.a>12?pctData.a+'%':'')+'</div></div>'
-    +'<div style="display:grid;grid-template-columns:1fr 1fr 1fr;text-align:center;font-size:12px;color:var(--t2)">'
-    +'<div><strong style="color:var(--g)">'+pctData.h+'%</strong><br/>'+m.h+'</div>'
-    +'<div><strong style="color:var(--gold)">'+pctData.x+'%</strong><br/>Empate</div>'
-    +'<div><strong style="color:var(--blue)">'+pctData.a+'%</strong><br/>'+m.a+'</div></div></div>';
+    +'<div style="display:flex;height:20px;border-radius:4px;overflow:hidden;margin-bottom:8px"><div style="width:'+pctData.h+'%;background:var(--g);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#000">'+(pctData.h>12?pctData.h+'%':'')+'</div><div style="width:'+pctData.x+'%;background:var(--gold);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#000">'+(pctData.x>12?pctData.x+'%':'')+'</div><div style="width:'+pctData.a+'%;background:var(--blue);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff">'+(pctData.a>12?pctData.a+'%':'')+'</div></div>'
+    +'<div style="display:grid;grid-template-columns:1fr 1fr 1fr;text-align:center;font-size:12px;color:var(--t2)"><div><strong style="color:var(--g)">'+pctData.h+'%</strong><br/>'+m.h+'</div><div><strong style="color:var(--gold)">'+pctData.x+'%</strong><br/>Empate</div><div><strong style="color:var(--blue)">'+pctData.a+'%</strong><br/>'+m.a+'</div></div></div>';
   if(acertaron)html+='<div style="font-size:13px;color:var(--t2)"><strong style="color:var(--g)">Acertaron (+3pts):</strong> '+acertaron+'</div>';
   document.getElementById('mov-mbody').innerHTML=html;
   openMov('mov-match');
@@ -1531,7 +1580,7 @@ function showMatchDetail(g,i){
 
 // ── Form steps ────────────────────────────────────────────
 function goStep(n){
-  if(n===2&&!gruposBuilt){ buildGruposForm(); gruposBuilt=true; }
+  if(n===2&&!gruposBuilt){buildGruposForm();gruposBuilt=true;}
   if(n===4)buildConfirm();
   document.querySelectorAll('.fstep').forEach(function(s){s.style.display='none';});
   var st=document.getElementById('fs'+n); if(st)st.style.display='block';
@@ -1581,15 +1630,12 @@ function submitPorra(){
   var ap=normStr((document.getElementById('f-ap')||{}).value||'');
   var full=(nom+' '+ap).trim()||'Participante';
   var gr={};
-  Object.keys(GR).forEach(function(g){
-    GR[g].m.forEach(function(_,i){ var e=document.getElementById('fg_'+g+'_'+i); if(e)gr[g+'_'+i]=e.value; });
-  });
-  var newP={nombre:nom, apellidos:ap,
+  Object.keys(GR).forEach(function(g){GR[g].m.forEach(function(_,i){var e=document.getElementById('fg_'+g+'_'+i);if(e)gr[g+'_'+i]=e.value;});});
+  var newP={nombre:nom,apellidos:ap,
     mvp:(document.getElementById('f-mvp')||{}).value||'',
-    gol1:(document.getElementById('f-g1')||{}).value||'', gol1n:parseInt((document.getElementById('f-g1n')||{}).value)||0,
-    gol2:(document.getElementById('f-g2')||{}).value||'', gol2n:parseInt((document.getElementById('f-g2n')||{}).value)||0,
-    camp:'', sub:'', p3:'', p4:'',
-    gr:gr, ko:{}, active:false, ts:new Date().toISOString(), pts:{grupos:0,ff:0,indiv:0,total:0}};
+    gol1:(document.getElementById('f-g1')||{}).value||'',gol1n:parseInt((document.getElementById('f-g1n')||{}).value)||0,
+    gol2:(document.getElementById('f-g2')||{}).value||'',gol2n:parseInt((document.getElementById('f-g2n')||{}).value)||0,
+    camp:'',sub:'',p3:'',p4:'',gr:gr,ko:{},active:false,ts:new Date().toISOString(),pts:{grupos:0,ff:0,indiv:0,total:0}};
   var msg='Porra '+displayName(full);
   var spmsg=document.getElementById('sp-msg'); if(spmsg){spmsg.textContent=msg;spmsg.dataset.msg=msg;}
   savePorra(newP).then(function(){showToast('✅ Porra guardada');}).catch(function(e){
@@ -1601,7 +1647,7 @@ function submitPorra(){
 // ── Eliminatoria fase 2 ───────────────────────────────────
 function initEliPage(){
   var open=document.getElementById('eli-open');
-  if(!ELI_ACTIVE && open){
+  if(!ELI_ACTIVE&&open){
     open.innerHTML='<div class="ab"><div>⛔</div><div>La porra eliminatoria no está disponible en este momento.</div></div>';
   }
 }
@@ -1613,8 +1659,8 @@ function lookupPorra(){
   var found=PORRAS.find(function(p){return normStr(p.nombre)===normStr(nom)&&normStr(p.apellidos)===normStr(ap);});
   if(!found){showToast('❌ No encontramos tu porra. Comprueba que coincide exactamente con lo que pusiste al inscribirte.');return;}
   eliPorraId=found.id;
-  var lookup=document.getElementById('eli-lookup'); if(lookup)lookup.style.display='none';
-  var form=document.getElementById('eli-form'); if(form)form.style.display='block';
+  document.getElementById('eli-lookup').style.display='none';
+  document.getElementById('eli-form').style.display='block';
   var fname=document.getElementById('eli-found-name'); if(fname)fname.textContent=displayName(found.nombre+(found.apellidos?' '+found.apellidos:''));
   buildR32Eli();
   showToast('✅ Porra encontrada');
@@ -1631,16 +1677,12 @@ function buildR32Eli(){
     var aTeam=ET[aKey]||'2º Grupo '+cruce.awayG;
     if(!koState[cruce.id])koState[cruce.id]={homeTeam:hTeam,awayTeam:aTeam};
     html+='<div class="cruce"><div class="cruce-lbl">'+cruce.lbl+'</div>'
-      +'<div class="cruce-teams">'
-        +'<div><div class="cruce-glbl">'+hTeam+'</div></div>'
-        +'<div class="vs-sep">vs</div>'
-        +'<div style="text-align:right"><div class="cruce-glbl">'+aTeam+'</div></div>'
-      +'</div>'
+      +'<div class="cruce-teams"><div><div class="cruce-glbl">'+hTeam+'</div></div><div class="vs-sep">vs</div><div style="text-align:right"><div class="cruce-glbl">'+aTeam+'</div></div></div>'
       +'<div class="cruce-res">'
         +'<div><div class="res-lbl">Resultado a 90\'</div><div class="sc-wrap">'
-          +'<input class="sc-in" id="ksh_'+cruce.id+'" type="number" min="0" max="20" placeholder="—" onchange="onEliScore(\''+cruce.id+'\',\''+hTeam+'\',\''+aTeam+'\')" />'
+          +'<input class="sc-in" id="ksh_'+cruce.id+'" type="number" min="0" max="20" placeholder="—" onchange="onEliScore(\''+cruce.id+'\',\''+hTeam.replace(/'/g,"\\'")+'\',' +'\''+aTeam.replace(/'/g,"\\'")+'\')" />'
           +'<span class="scsep">:</span>'
-          +'<input class="sc-in" id="ksa_'+cruce.id+'" type="number" min="0" max="20" placeholder="—" onchange="onEliScore(\''+cruce.id+'\',\''+hTeam+'\',\''+aTeam+'\')" />'
+          +'<input class="sc-in" id="ksa_'+cruce.id+'" type="number" min="0" max="20" placeholder="—" onchange="onEliScore(\''+cruce.id+'\',\''+hTeam.replace(/'/g,"\\'")+'\',' +'\''+aTeam.replace(/'/g,"\\'")+'\')" />'
         +'</div><div style="font-size:10px;color:var(--t3);margin-top:3px">Empate → indica quién pasa abajo</div></div>'
         +'<div><div class="res-lbl">Equipo clasificado</div>'
           +'<select class="fi" id="kw_'+cruce.id+'" onchange="onEliWinner(\''+cruce.id+'\')">'
@@ -1655,7 +1697,7 @@ function buildR32Eli(){
 }
 
 function onEliScore(cid,hTeam,aTeam){
-  var sh=document.getElementById('ksh_'+cid), sa=document.getElementById('ksa_'+cid);
+  var sh=document.getElementById('ksh_'+cid),sa=document.getElementById('ksa_'+cid);
   if(!koState[cid])koState[cid]={homeTeam:hTeam,awayTeam:aTeam};
   var hv=sh&&sh.value!==''?parseInt(sh.value):undefined;
   var av=sa&&sa.value!==''?parseInt(sa.value):undefined;
@@ -1691,24 +1733,20 @@ function buildAutoKO(contId,pairs,prev,pfx){
   var html='';
   pairs.forEach(function(pair,i){
     var cid=pfx+i; if(!koState[cid])koState[cid]={};
-    var h=prev[pair[0]]||'', a=prev[pair[1]]||'';
+    var h=prev[pair[0]]||'',a=prev[pair[1]]||'';
     koState[cid].homeTeam=h||koState[cid].homeTeam||'';
     koState[cid].awayTeam=a||koState[cid].awayTeam||'';
     var ko=koState[cid];
-    var sh=ko.scoreH!==undefined?ko.scoreH:'', sa=ko.scoreA!==undefined?ko.scoreA:'';
+    var sh=ko.scoreH!==undefined?ko.scoreH:'',sa=ko.scoreA!==undefined?ko.scoreA:'';
     var winDis=(sh!==''&&sa!==''&&parseInt(sh)!==parseInt(sa))?'disabled':'';
     html+='<div class="cruce"><div class="cruce-lbl">'+(pfx==='fin2'?'Gran Final':'Partido '+(i+1))+'</div>'
-      +'<div class="cruce-teams">'
-        +'<div><div class="cruce-glbl">'+(h||'Pendiente')+'</div>'+(h?'<span class="auto-tag">auto</span>':'')+'</div>'
-        +'<div class="vs-sep">vs</div>'
-        +'<div style="text-align:right">'+(a?'<span class="auto-tag">auto</span>':'')+'<div class="cruce-glbl">'+(a||'Pendiente')+'</div></div>'
-      +'</div>'
+      +'<div class="cruce-teams"><div><div class="cruce-glbl">'+(h||'Pendiente')+'</div>'+(h?'<span class="auto-tag">auto</span>':'')+'</div><div class="vs-sep">vs</div><div style="text-align:right">'+(a?'<span class="auto-tag">auto</span>':'')+'<div class="cruce-glbl">'+(a||'Pendiente')+'</div></div></div>'
       +'<div class="cruce-res">'
         +'<div><div class="res-lbl">Resultado a 90\'</div><div class="sc-wrap">'
-          +'<input class="sc-in" id="ksh_'+cid+'" type="number" min="0" max="20" value="'+sh+'" placeholder="—" onchange="onEliScore(\''+cid+'\',\''+h+'\',\''+a+'\')" />'
+          +'<input class="sc-in" id="ksh_'+cid+'" type="number" min="0" max="20" value="'+sh+'" placeholder="—" onchange="onEliScore(\''+cid+'\',\''+h.replace(/'/g,"\\'")+'\',' +'\''+a.replace(/'/g,"\\'")+'\')" />'
           +'<span class="scsep">:</span>'
-          +'<input class="sc-in" id="ksa_'+cid+'" type="number" min="0" max="20" value="'+sa+'" placeholder="—" onchange="onEliScore(\''+cid+'\',\''+h+'\',\''+a+'\')" />'
-        +'</div><div style="font-size:10px;color:var(--t3);margin-top:3px">Empate → indica quién pasa abajo</div></div>'
+          +'<input class="sc-in" id="ksa_'+cid+'" type="number" min="0" max="20" value="'+sa+'" placeholder="—" onchange="onEliScore(\''+cid+'\',\''+h.replace(/'/g,"\\'")+'\',' +'\''+a.replace(/'/g,"\\'")+'\')" />'
+        +'</div></div>'
         +'<div><div class="res-lbl">Equipo que pasa</div>'
           +'<select class="fi" id="kw_'+cid+'" onchange="onEliWinner(\''+cid+'\')" '+winDis+'>'
             +'<option value="">—</option>'
@@ -1734,124 +1772,22 @@ function checkEliComplete(){
   var p4=(document.getElementById('ff-4')||{}).value||'';
   var btn=document.getElementById('btn-guardar-bracket');
   if(!btn)return;
-  var complete=c&&s&&p3&&p4;
-  btn.disabled=!complete;
-  btn.style.opacity=complete?'1':'.4';
-  btn.style.cursor=complete?'pointer':'not-allowed';
+  var ok=c&&s&&p3&&p4;
+  btn.disabled=!ok; btn.style.opacity=ok?'1':'.4'; btn.style.cursor=ok?'pointer':'not-allowed';
 }
 
 function submitEliPorra(){
   var ko={};
-  Object.keys(koState).forEach(function(cid){
-    if(koState[cid].winner)ko[cid]={winner:koState[cid].winner,scoreH:koState[cid].scoreH,scoreA:koState[cid].scoreA};
-  });
+  Object.keys(koState).forEach(function(cid){if(koState[cid].winner)ko[cid]={winner:koState[cid].winner,scoreH:koState[cid].scoreH,scoreA:koState[cid].scoreA};});
   var camp=(document.getElementById('ff-c')||{}).value||'';
   var sub=(document.getElementById('ff-s')||{}).value||'';
   var p3=(document.getElementById('ff-3')||{}).value||'';
   var p4=(document.getElementById('ff-4')||{}).value||'';
   if(eliPorraId){
     sbFetch('PATCH','porras','id=eq.'+eliPorraId,{ko:ko,camp:camp,sub:sub,p3:p3,p4:p4})
-      .then(function(){
-        showToast('✅ Bracket guardado');
-        downloadEliPDF(camp,sub,p3,p4,ko);
-        loadPorras();
-      })
-      .catch(function(e){console.error(e);showToast('Error al guardar. Inténtalo de nuevo.');});
+      .then(function(){showToast('✅ Bracket guardado');downloadEliPDF(camp,sub,p3,p4,ko);loadPorras();})
+      .catch(function(e){console.error(e);showToast('Error al guardar');});
   }
-}
-
-// ── PDF grupos ────────────────────────────────────────────
-function downloadPDF(){
-  var id=parseInt((document.getElementById('mov-porra')||{dataset:{}}).dataset.porraId||'0');
-  var p=id?PORRAS.find(function(x){return x.id===id;}):null;
-  if(!p){
-    var nom=normStr((document.getElementById('f-nom')||{}).value||'');
-    var ap2=normStr((document.getElementById('f-ap')||{}).value||'');
-    p={nombre:nom,apellidos:ap2,
-      mvp:(document.getElementById('f-mvp')||{}).value||'—',
-      gol1:(document.getElementById('f-g1')||{}).value||'—',gol1n:parseInt((document.getElementById('f-g1n')||{}).value)||0,
-      gol2:(document.getElementById('f-g2')||{}).value||'—',gol2n:parseInt((document.getElementById('f-g2n')||{}).value)||0,
-      camp:'',sub:'',p3:'',p4:'',ts:new Date().toISOString(),pts:{total:0},gr:{}};
-    Object.keys(GR).forEach(function(g){
-      GR[g].m.forEach(function(_,i){var e=document.getElementById('fg_'+g+'_'+i);if(e)p.gr[g+'_'+i]=e.value;});
-    });
-  }
-  var full=displayName(p.nombre+(p.apellidos?' '+p.apellidos:''));
-  try{
-    var jsPDF=(window.jspdf&&window.jspdf.jsPDF)?window.jspdf.jsPDF:null;
-    if(!jsPDF){showToast('Cargando PDF...');setTimeout(downloadPDF,1500);return;}
-    var doc=new jsPDF();
-    doc.setFillColor(10,14,11);doc.rect(0,0,210,297,'F');
-    doc.setTextColor(0,192,115);doc.setFontSize(20);doc.setFont('helvetica','bold');
-    doc.text('NFQ WORLD CUP 2026',105,18,{align:'center'});
-    doc.setTextColor(240,247,242);doc.setFontSize(14);doc.text('PORRA OFICIAL — FASE DE GRUPOS',105,27,{align:'center'});
-    doc.setFontSize(10);doc.setTextColor(139,168,152);
-    doc.text('Participante: '+full,20,40);
-    doc.text('Mensaje Bizum: "Porra '+full+'"',20,47);
-    doc.text('Registrado: '+new Date(p.ts).toLocaleString('es-ES'),20,54);
-    doc.setTextColor(0,192,115);doc.setFontSize(12);doc.text('PREMIOS INDIVIDUALES',20,66);
-    doc.setTextColor(240,247,242);doc.setFontSize(9);
-    doc.text('MVP: '+(p.mvp||'—'),20,73);
-    doc.text('Goleador torneo: '+(p.gol1||'—')+' ('+p.gol1n+' goles)',20,80);
-    doc.text('Goleador Espana: '+(p.gol2||'—')+' ('+p.gol2n+' goles)',20,87);
-    doc.setTextColor(0,192,115);doc.setFontSize(12);doc.text('FASE DE GRUPOS',20,99);
-    doc.setFontSize(8);var y=107;
-    Object.keys(GR).forEach(function(g){
-      doc.setTextColor(0,192,115);doc.text('Grupo '+g,20,y);y+=5;
-      doc.setTextColor(190,190,190);
-      GR[g].m.forEach(function(m,i){
-        var pred=p.gr&&p.gr[g+'_'+i]?p.gr[g+'_'+i]:'—';
-        doc.text(m.h+' vs '+m.a+': '+pred,25,y);y+=4;
-        if(y>282){doc.addPage();doc.setFillColor(10,14,11);doc.rect(0,0,210,297,'F');y=20;}
-      });
-    });
-    doc.setTextColor(82,107,94);doc.setFontSize(8);
-    doc.text('Generado: '+new Date().toLocaleString('es-ES')+' · NFQ World Cup Porra 2026',105,290,{align:'center'});
-    doc.save('porra-grupos-'+(full||'participante').toLowerCase().replace(/\s+/g,'-')+'.pdf');
-    showToast('📄 PDF descargado');
-  }catch(e){showToast('Error al generar PDF');console.error(e);}
-}
-
-// ── PDF eliminatoria ──────────────────────────────────────
-function downloadEliPDF(camp,sub,p3,p4,ko){
-  var p=eliPorraId?PORRAS.find(function(x){return x.id===eliPorraId;}):null;
-  if(!p)return;
-  var full=displayName(p.nombre+(p.apellidos?' '+p.apellidos:''));
-  try{
-    var jsPDF=(window.jspdf&&window.jspdf.jsPDF)?window.jspdf.jsPDF:null;
-    if(!jsPDF)return;
-    var doc=new jsPDF();
-    doc.setFillColor(10,14,11);doc.rect(0,0,210,297,'F');
-    doc.setTextColor(245,200,66);doc.setFontSize(20);doc.setFont('helvetica','bold');
-    doc.text('NFQ WORLD CUP 2026',105,18,{align:'center'});
-    doc.setTextColor(240,247,242);doc.setFontSize(14);doc.text('PORRA ELIMINATORIA — BRACKET',105,27,{align:'center'});
-    doc.setFontSize(10);doc.setTextColor(139,168,152);
-    doc.text('Participante: '+full,20,40);
-    doc.text('Generado: '+new Date().toLocaleString('es-ES'),20,47);
-    doc.setTextColor(245,200,66);doc.setFontSize(12);doc.text('PODIO FINAL',20,60);
-    doc.setTextColor(240,247,242);doc.setFontSize(10);
-    doc.text('Campeon: '+(camp||'—'),20,68);
-    doc.text('Subcampeon: '+(sub||'—'),20,75);
-    doc.text('3er puesto: '+(p3||'—'),20,82);
-    doc.text('4o puesto: '+(p4||'—'),20,89);
-    doc.setTextColor(245,200,66);doc.setFontSize(12);doc.text('BRACKET',20,101);
-    doc.setFontSize(8);var y=109;
-    var rounds={c:'Dieciseisavos',oct:'Octavos',qf:'Cuartos',sf:'Semifinales',fin2:'Final'};
-    Object.keys(rounds).forEach(function(pfx){
-      var rKeys=Object.keys(ko).filter(function(k){return k.indexOf(pfx)===0;});
-      if(!rKeys.length)return;
-      doc.setTextColor(245,200,66);doc.text(rounds[pfx],20,y);y+=5;
-      doc.setTextColor(190,190,190);
-      rKeys.forEach(function(k){
-        if(ko[k]&&ko[k].winner){doc.text('Ganador: '+ko[k].winner,25,y);y+=4;}
-        if(y>282){doc.addPage();doc.setFillColor(10,14,11);doc.rect(0,0,210,297,'F');y=20;}
-      });
-    });
-    doc.setTextColor(82,107,94);doc.setFontSize(8);
-    doc.text('Generado: '+new Date().toLocaleString('es-ES')+' · NFQ World Cup Porra 2026',105,290,{align:'center'});
-    doc.save('porra-eliminatoria-'+(full||'participante').toLowerCase().replace(/\s+/g,'-')+'.pdf');
-    showToast('📄 PDF del bracket descargado');
-  }catch(e){console.error('PDF eli error:',e);}
 }
 
 // ── Scoring ───────────────────────────────────────────────
@@ -1860,25 +1796,18 @@ function calcPuntos(){
   var ind=(typeof API_IND!=='undefined')?API_IND:{};
   PORRAS.forEach(function(p){
     var gPts=0,fPts=0,iPts=0;
-    // Grupos: 3pts cada acierto
     Object.keys(grRes).forEach(function(k){
       var res=grRes[k]; if(!res||res.h===undefined)return;
       var pred=p.gr&&p.gr[k]?p.gr[k]:''; if(!pred)return;
       var real=res.h>res.a?'1':res.h===res.a?'x':'2'; if(pred===real)gPts+=3;
     });
-    // Individuales
-    if(ind.mvp&&p.mvp&&normStr(ind.mvp)===normStr(p.mvp))iPts+=20;
-    if(ind.gol1&&p.gol1&&normStr(ind.gol1)===normStr(p.gol1)){
-      iPts+=20; if(ind.gol1n&&parseInt(ind.gol1n)===p.gol1n)iPts+=15;
-    }
-    if(ind.gol2&&p.gol2&&normStr(ind.gol2)===normStr(p.gol2)){
-      iPts+=15; if(ind.gol2n&&parseInt(ind.gol2n)===p.gol2n)iPts+=15;
-    }
-    // Podio (de fase eliminatoria)
-    if(ind.camp&&p.camp&&normStr(ind.camp)===normStr(p.camp))fPts+=50;
-    if(ind.sub&&p.sub&&normStr(ind.sub)===normStr(p.sub))fPts+=30;
-    if(ind.p3&&p.p3&&normStr(ind.p3)===normStr(p.p3))fPts+=30;
-    if(ind.p4&&p.p4&&normStr(ind.p4)===normStr(p.p4))fPts+=15;
+    if(namesMatch(ind.mvp,p.mvp))iPts+=20;
+    if(namesMatch(ind.gol1,p.gol1)){iPts+=20;if(ind.gol1n&&parseInt(ind.gol1n)===p.gol1n)iPts+=15;}
+    if(namesMatch(ind.gol2,p.gol2)){iPts+=15;if(ind.gol2n&&parseInt(ind.gol2n)===p.gol2n)iPts+=15;}
+    if(namesMatch(ind.camp,p.camp))fPts+=50;
+    if(namesMatch(ind.sub,p.sub))fPts+=30;
+    if(namesMatch(ind.p3,p.p3))fPts+=30;
+    if(namesMatch(ind.p4,p.p4))fPts+=15;
     p.pts={grupos:gPts,ff:fPts,indiv:iPts,total:gPts+fPts+iPts};
   });
 }
@@ -1891,22 +1820,19 @@ function getMove(id,pos){
 
 function renderRanking(){
   var active=PORRAS.filter(function(p){return p.active;}).sort(function(a,b){return b.pts.total-a.pts.total;});
-  var body=document.getElementById('rk-body'), hdr=document.getElementById('rk-header'), sub=document.getElementById('rk-sub');
+  var body=document.getElementById('rk-body'),hdr=document.getElementById('rk-header'),sub=document.getElementById('rk-sub');
   if(!body)return;
   if(hdr)hdr.innerHTML=MUNDIAL_STARTED
     ?'<div>#</div><div>Participante</div><div style="text-align:right">Grupos</div><div style="text-align:right">Elim.</div><div style="text-align:right">Indiv.</div><div style="text-align:right">Total</div><div style="text-align:right">Porra</div>'
     :'<div>#</div><div>Participante</div><div style="text-align:right;grid-column:3/8">Registrado</div>';
   if(sub)sub.textContent=MUNDIAL_STARTED?'Haz clic para ver la porra completa':'Participantes confirmados';
-  if(!active.length){
-    body.innerHTML='<div class="es"><div style="font-size:36px;opacity:.2;margin-bottom:8px">🏆</div><div style="font-size:13px;color:var(--t3)">Sin participantes confirmados todavía</div></div>';
-    return;
-  }
+  if(!active.length){body.innerHTML='<div class="es"><div style="font-size:36px;opacity:.2;margin-bottom:8px">🏆</div><div style="font-size:13px;color:var(--t3)">Sin participantes confirmados todavía</div></div>';return;}
   var last=active.length-1;
   body.innerHTML=active.map(function(p,i){
     var pc=i===0?'p1':i===1?'p2':i===2?'p3':'';
     var rc=i===0?'r1':i===1?'r2':i===2?'r3':'';
     var medal=i===0?'🥇':i===1?'🥈':i===2?'🥉':'';
-    var mv=getMove(p.id,i), isLast=i===last&&active.length>3;
+    var mv=getMove(p.id,i),isLast=i===last&&active.length>3;
     var moveHtml=isLast?'<span class="rmv sb">SEBO</span>':'<span class="rmv '+mv.c+'">'+mv.h+'</span>';
     var full=displayName(p.nombre+(p.apellidos?' '+p.apellidos:''));
     if(MUNDIAL_STARTED){
@@ -1933,40 +1859,138 @@ function verPorra(id){
   var full=displayName(p.nombre+(p.apellidos?' '+p.apellidos:''));
   document.getElementById('mp-n').textContent=full;
   document.getElementById('mp-p').textContent=p.pts.total+' pts';
-  var lk=document.getElementById('mp-lk'), bd=document.getElementById('mp-bd');
+  var lk=document.getElementById('mp-lk'),bd=document.getElementById('mp-bd');
+
+  // Pre-mundial: todo bloqueado
   if(!MUNDIAL_STARTED){
     if(lk)lk.style.display='block'; if(bd)bd.style.display='none';
-  } else {
-    if(lk)lk.style.display='none'; if(bd)bd.style.display='block';
-    document.getElementById('mp-ind').innerHTML
-      ='<div class="mk">MVP</div><div class="mv2">'+(p.mvp||'—')+'</div>'
-      +'<div class="mk">Goleador torneo</div><div class="mv2">'+(p.gol1||'—')+' ('+p.gol1n+' goles)</div>'
-      +'<div class="mk">Goleador España</div><div class="mv2">'+(p.gol2||'—')+' ('+p.gol2n+' goles)</div>';
-    // Only show podio if they've done eli phase
-    var podioHtml='';
-    if(p.camp||p.sub){
-      podioHtml='<div class="mk">Campeón</div><div class="mv2" style="color:var(--g)">'+(p.camp||'—')+'</div>'
-        +'<div class="mk">Subcampeón</div><div class="mv2">'+(p.sub||'—')+'</div>'
-        +'<div class="mk">3er puesto</div><div class="mv2">'+(p.p3||'—')+'</div>';
-    } else {
-      podioHtml='<div style="grid-column:1/3;font-size:12px;color:var(--t3)">Pendiente de completar la porra eliminatoria</div>';
-    }
-    document.getElementById('mp-ff').innerHTML=podioHtml;
-    var grHtml='';
-    Object.keys(GR).forEach(function(g){
-      grHtml+='<div style="font-size:9px;color:var(--g);margin:9px 0 4px;letter-spacing:1px;font-weight:700">GRUPO '+g+'</div>';
-      GR[g].m.forEach(function(m,i){
-        var k=g+'_'+i, pred=p.gr&&p.gr[k]?p.gr[k]:'—';
-        var res=(typeof API_GR_LIVE!=='undefined')?API_GR_LIVE[k]:null;
-        var suffix='';
-        if(res){var real=res.h>res.a?'1':res.h===res.a?'x':'2';suffix=' <span class="'+(pred===real?'rok':'rfail')+'">'+res.h+':'+res.a+' '+(pred===real?'✓':'✗')+'</span>';}
-        grHtml+='<div class="mm"><span class="mmt">'+m.h+' vs '+m.a+'</span><span class="mmp">'+pred+suffix+'</span></div>';
-      });
-    });
-    document.getElementById('mp-gr').innerHTML=grHtml;
+    document.getElementById('mov-porra').dataset.porraId=id;
+    openMov('mov-porra'); return;
   }
+  if(lk)lk.style.display='none'; if(bd)bd.style.display='block';
+
+  // Individuales — visibles desde el 11 junio
+  document.getElementById('mp-ind').innerHTML
+    ='<div class="mk">MVP</div><div class="mv2">'+(p.mvp||'—')+'</div>'
+    +'<div class="mk">Goleador torneo</div><div class="mv2">'+(p.gol1||'—')+' ('+p.gol1n+' goles)</div>'
+    +'<div class="mk">Goleador España</div><div class="mv2">'+(p.gol2||'—')+' ('+p.gol2n+' goles)</div>';
+
+  // Bracket — solo visible desde que empieza el primer 16avos (ELI_STARTED)
+  var eliStarted = (typeof ELI_STARTED !== 'undefined') ? ELI_STARTED : false;
+  var ffHtml='';
+  if(!eliStarted){
+    ffHtml='<div style="grid-column:1/3;font-size:12px;color:var(--t3);padding:8px 0">🔒 Visible cuando empiece el primer partido de 16avos</div>';
+  } else if(!p.camp&&!p.sub){
+    ffHtml='<div style="grid-column:1/3;font-size:12px;color:var(--t3);padding:8px 0">Pendiente de completar la porra eliminatoria</div>';
+  } else {
+    var ind=(typeof API_IND!=='undefined')?API_IND:{};
+    ffHtml='<div class="mk">Campeón</div><div class="mv2" style="color:var(--g)">'+(p.camp||'—')+(ind.camp?' <span class="'+(namesMatch(ind.camp,p.camp)?'rok':'rfail')+'">'+(namesMatch(ind.camp,p.camp)?'✓':'✗')+'</span>':'')+'</div>'
+      +'<div class="mk">Subcampeón</div><div class="mv2">'+(p.sub||'—')+(ind.sub?' <span class="'+(namesMatch(ind.sub,p.sub)?'rok':'rfail')+'">'+(namesMatch(ind.sub,p.sub)?'✓':'✗')+'</span>':'')+'</div>'
+      +'<div class="mk">3er puesto</div><div class="mv2">'+(p.p3||'—')+(ind.p3?' <span class="'+(namesMatch(ind.p3,p.p3)?'rok':'rfail')+'">'+(namesMatch(ind.p3,p.p3)?'✓':'✗')+'</span>':'')+'</div>'
+      +'<div class="mk">4º puesto</div><div class="mv2">'+(p.p4||'—')+'</div>';
+    // Bracket cruces
+    if(p.ko&&Object.keys(p.ko).length){
+      ffHtml+='<div style="grid-column:1/3;margin-top:8px;font-size:10px;color:var(--t3);letter-spacing:1px;text-transform:uppercase">Bracket eliminatorio</div>';
+      var rounds={c:'Dieciseisavos',oct:'Octavos',qf:'Cuartos',sf:'Semis',fin2:'Final'};
+      Object.keys(rounds).forEach(function(pfx){
+        var rKeys=Object.keys(p.ko).filter(function(k){return k.indexOf(pfx)===0;});
+        if(!rKeys.length)return;
+        ffHtml+='<div style="grid-column:1/3;font-size:10px;color:var(--g);margin-top:6px">'+rounds[pfx]+'</div>';
+        rKeys.forEach(function(k){
+          var entry=p.ko[k]; if(!entry||!entry.winner)return;
+          ffHtml+='<div class="mk" style="font-size:11px">'+k+'</div><div class="mv2" style="font-size:12px">'+entry.winner+'</div>';
+        });
+      });
+    }
+  }
+  document.getElementById('mp-ff').innerHTML=ffHtml;
+
+  // Grupos
+  var grHtml='';
+  Object.keys(GR).forEach(function(g){
+    grHtml+='<div style="font-size:9px;color:var(--g);margin:9px 0 4px;letter-spacing:1px;font-weight:700">GRUPO '+g+'</div>';
+    GR[g].m.forEach(function(m,i){
+      var k=g+'_'+i,pred=p.gr&&p.gr[k]?p.gr[k]:'—';
+      var res=(typeof API_GR_LIVE!=='undefined')?API_GR_LIVE[k]:null;
+      var suffix='';
+      if(res){var real=res.h>res.a?'1':res.h===res.a?'x':'2';suffix=' <span class="'+(pred===real?'rok':'rfail')+'">'+res.h+':'+res.a+' '+(pred===real?'✓':'✗')+'</span>';}
+      grHtml+='<div class="mm"><span class="mmt">'+m.h+' vs '+m.a+'</span><span class="mmp">'+pred+suffix+'</span></div>';
+    });
+  });
+  document.getElementById('mp-gr').innerHTML=grHtml;
   document.getElementById('mov-porra').dataset.porraId=id;
   openMov('mov-porra');
+}
+
+// ── PDFs ──────────────────────────────────────────────────
+function downloadPDF(){
+  var id=parseInt((document.getElementById('mov-porra')||{dataset:{}}).dataset.porraId||'0');
+  var p=id?PORRAS.find(function(x){return x.id===id;}):null;
+  if(!p){
+    var nom=normStr((document.getElementById('f-nom')||{}).value||'');
+    var ap2=normStr((document.getElementById('f-ap')||{}).value||'');
+    p={nombre:nom,apellidos:ap2,mvp:(document.getElementById('f-mvp')||{}).value||'—',
+      gol1:(document.getElementById('f-g1')||{}).value||'—',gol1n:parseInt((document.getElementById('f-g1n')||{}).value)||0,
+      gol2:(document.getElementById('f-g2')||{}).value||'—',gol2n:parseInt((document.getElementById('f-g2n')||{}).value)||0,
+      camp:'',sub:'',p3:'',p4:'',ts:new Date().toISOString(),pts:{total:0},gr:{}};
+    Object.keys(GR).forEach(function(g){GR[g].m.forEach(function(_,i){var e=document.getElementById('fg_'+g+'_'+i);if(e)p.gr[g+'_'+i]=e.value;});});
+  }
+  var full=displayName(p.nombre+(p.apellidos?' '+p.apellidos:''));
+  try{
+    var jsPDF=(window.jspdf&&window.jspdf.jsPDF)?window.jspdf.jsPDF:null;
+    if(!jsPDF){showToast('Cargando PDF...');setTimeout(downloadPDF,1500);return;}
+    var doc=new jsPDF();
+    doc.setFillColor(10,14,11);doc.rect(0,0,210,297,'F');
+    doc.setTextColor(0,192,115);doc.setFontSize(20);doc.setFont('helvetica','bold');
+    doc.text('NFQ WORLD CUP 2026',105,18,{align:'center'});
+    doc.setTextColor(240,247,242);doc.setFontSize(14);doc.text('PORRA OFICIAL — FASE DE GRUPOS',105,27,{align:'center'});
+    doc.setFontSize(10);doc.setTextColor(139,168,152);
+    doc.text('Participante: '+full,20,40);doc.text('Bizum: "Porra '+full+'"',20,47);doc.text('Registrado: '+new Date(p.ts).toLocaleString('es-ES'),20,54);
+    doc.setTextColor(0,192,115);doc.setFontSize(12);doc.text('PREMIOS INDIVIDUALES',20,66);
+    doc.setTextColor(240,247,242);doc.setFontSize(9);
+    doc.text('MVP: '+(p.mvp||'—'),20,73);doc.text('Goleador torneo: '+(p.gol1||'—')+' ('+p.gol1n+')',20,80);doc.text('Goleador Espana: '+(p.gol2||'—')+' ('+p.gol2n+')',20,87);
+    doc.setTextColor(0,192,115);doc.setFontSize(12);doc.text('FASE DE GRUPOS',20,99);
+    doc.setFontSize(8);var y=107;
+    Object.keys(GR).forEach(function(g){
+      doc.setTextColor(0,192,115);doc.text('Grupo '+g,20,y);y+=5;doc.setTextColor(190,190,190);
+      GR[g].m.forEach(function(m,i){
+        doc.text(m.h+' vs '+m.a+': '+(p.gr&&p.gr[g+'_'+i]?p.gr[g+'_'+i]:'—'),25,y);y+=4;
+        if(y>282){doc.addPage();doc.setFillColor(10,14,11);doc.rect(0,0,210,297,'F');y=20;}
+      });
+    });
+    doc.setTextColor(82,107,94);doc.setFontSize(8);doc.text('Generado: '+new Date().toLocaleString('es-ES')+' · NFQ World Cup Porra 2026',105,290,{align:'center'});
+    doc.save('porra-grupos-'+(full||'participante').toLowerCase().replace(/\s+/g,'-')+'.pdf');
+    showToast('📄 PDF descargado');
+  }catch(e){showToast('Error al generar PDF');console.error(e);}
+}
+
+function downloadEliPDF(camp,sub,p3,p4,ko){
+  var p=eliPorraId?PORRAS.find(function(x){return x.id===eliPorraId;}):null; if(!p)return;
+  var full=displayName(p.nombre+(p.apellidos?' '+p.apellidos:''));
+  try{
+    var jsPDF=(window.jspdf&&window.jspdf.jsPDF)?window.jspdf.jsPDF:null; if(!jsPDF)return;
+    var doc=new jsPDF();
+    doc.setFillColor(10,14,11);doc.rect(0,0,210,297,'F');
+    doc.setTextColor(245,200,66);doc.setFontSize(20);doc.setFont('helvetica','bold');
+    doc.text('NFQ WORLD CUP 2026',105,18,{align:'center'});
+    doc.setTextColor(240,247,242);doc.setFontSize(14);doc.text('PORRA ELIMINATORIA — BRACKET',105,27,{align:'center'});
+    doc.setFontSize(10);doc.setTextColor(139,168,152);doc.text('Participante: '+full,20,40);doc.text('Generado: '+new Date().toLocaleString('es-ES'),20,47);
+    doc.setTextColor(245,200,66);doc.setFontSize(12);doc.text('PODIO FINAL',20,60);
+    doc.setTextColor(240,247,242);doc.setFontSize(10);
+    doc.text('Campeon: '+(camp||'—'),20,68);doc.text('Subcampeon: '+(sub||'—'),20,75);doc.text('3er: '+(p3||'—'),20,82);doc.text('4o: '+(p4||'—'),20,89);
+    doc.setTextColor(245,200,66);doc.setFontSize(12);doc.text('BRACKET',20,101);
+    doc.setFontSize(8);var y=109;
+    var rounds={c:'Dieciseisavos',oct:'Octavos',qf:'Cuartos',sf:'Semis',fin2:'Final'};
+    Object.keys(rounds).forEach(function(pfx){
+      var rKeys=Object.keys(ko).filter(function(k){return k.indexOf(pfx)===0;});
+      if(!rKeys.length)return;
+      doc.setTextColor(245,200,66);doc.text(rounds[pfx],20,y);y+=5;doc.setTextColor(190,190,190);
+      rKeys.forEach(function(k){if(ko[k]&&ko[k].winner){doc.text('→ '+ko[k].winner,25,y);y+=4;if(y>282){doc.addPage();doc.setFillColor(10,14,11);doc.rect(0,0,210,297,'F');y=20;}}});
+    });
+    doc.setTextColor(82,107,94);doc.setFontSize(8);doc.text('Generado: '+new Date().toLocaleString('es-ES')+' · NFQ World Cup Porra 2026',105,290,{align:'center'});
+    doc.save('porra-eliminatoria-'+(full||'participante').toLowerCase().replace(/\s+/g,'-')+'.pdf');
+    showToast('📄 PDF del bracket descargado');
+  }catch(e){console.error('PDF eli:',e);}
 }
 
 // ── Admin ─────────────────────────────────────────────────
@@ -1984,14 +2008,13 @@ function admLogout(){
 }
 function renderAdmin(){
   var activos=PORRAS.filter(function(p){return p.active;}).length;
-  var tot=document.getElementById('adm-tot'); if(tot)tot.textContent=PORRAS.length;
-  var act=document.getElementById('adm-act'); if(act)act.textContent=activos;
-  var bote=document.getElementById('adm-bote'); if(bote)bote.textContent=activos*10+'€';
+  var tot=document.getElementById('adm-tot');if(tot)tot.textContent=PORRAS.length;
+  var act=document.getElementById('adm-act');if(act)act.textContent=activos;
+  var bote=document.getElementById('adm-bote');if(bote)bote.textContent=activos*10+'€';
   var pl=document.getElementById('adm-parts');
   if(pl)pl.innerHTML=PORRAS.length?PORRAS.map(function(p){
     var full=displayName(p.nombre+(p.apellidos?' '+p.apellidos:''));
-    return '<div class="arow"><div>'
-      +'<div style="font-weight:600;font-size:13px">'+full+'</div>'
+    return '<div class="arow"><div><div style="font-weight:600;font-size:13px">'+full+'</div>'
       +'<div style="font-size:11px;color:var(--t3)">Bizum: "Porra '+full+'" · '+new Date(p.ts).toLocaleDateString('es-ES')+'</div></div>'
       +'<span class="sbg '+(p.active?'a':'p')+'">'+(p.active?'ACTIVO':'PENDIENTE')+'</span>'
       +'<button class="btn '+(p.active?'bdanger':'bgold')+' bsm" onclick="toggleActive('+p.id+')">'+(p.active?'Desactivar':'✓ Activar')+'</button>'
@@ -2020,7 +2043,7 @@ function publishPost(){
   var txt=((document.getElementById('v-txt')||{}).value||'').trim();
   var aut=((document.getElementById('v-aut')||{}).value||'').trim()||'Anónimo';
   if(!txt){showToast('⚠️ Escribe algo primero');return;}
-  savePost(aut,txt).then(function(){ var el=document.getElementById('v-txt'); if(el)el.value=''; showToast('✅ Publicado'); });
+  savePost(aut,txt).then(function(){var el=document.getElementById('v-txt');if(el)el.value='';showToast('✅ Publicado');});
 }
 function renderPosts(){
   var cont=document.getElementById('posts'); if(!cont)return;
@@ -2057,6 +2080,12 @@ function votePost(id,dir){
     refreshAll();
     scheduleRefresh();
   }
+  // Setup player search
+  setTimeout(function(){
+    setupSearch('f-mvp', WORLD_PLAYERS);
+    setupSearch('f-g1',  WORLD_PLAYERS);
+    setupSearch('f-g2',  SPAIN_PLAYERS);
+  }, 400);
 })();
 </script>
 </body>
