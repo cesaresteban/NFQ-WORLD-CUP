@@ -3,6 +3,7 @@
 <head>
 <meta charset='UTF-8'/>
 <meta name='viewport' content='width=device-width,initial-scale=1.0'/>
+<link rel="icon" type="image/png" href="logo.png"/>
 <title>NFQ World Cup 2026 — Porra Oficial</title>
 <link href='https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap' rel='stylesheet'/>
 <script src='https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js'></script>
@@ -705,8 +706,10 @@ footer span{color:var(--g)}
     <div id="adm-login" style="max-width:360px">
       <div class="card" style="padding:22px">
         <div style="font-size:13px;color:var(--t2);margin-bottom:14px">Acceso restringido.</div>
+        <input type="email" class="fi" id="adm-email" placeholder="Email" style="margin-bottom:10px" onkeydown="if(event.key==='Enter')admLogin()"/>
         <input type="password" class="fi" id="adm-pw" placeholder="Contraseña" style="margin-bottom:12px" onkeydown="if(event.key==='Enter')admLogin()"/>
-        <button class="btn bp bsm" style="width:100%;justify-content:center" onclick="admLogin()">Entrar</button>
+        <button class="btn bp bsm" style="width:100%;justify-content:center" id="adm-btn" onclick="admLogin()">Entrar</button>
+        <div id="adm-err" style="display:none;font-size:12px;color:var(--red);margin-top:8px;text-align:center"></div>
       </div>
     </div>
     <div id="adm-panel" style="display:none">
@@ -1194,7 +1197,7 @@ function scheduleRefresh() {
 // NFQ WORLD CUP 2026 — MAIN JS v5 FINAL
 // ═══════════════════════════════════════════════════════════
 
-var ADMIN_PW    = 'nfq2026';
+var ADM_TOKEN   = null; // set on Supabase Auth login
 var prevRk      = [];
 var koState     = {};
 var eliPorraId  = null;
@@ -1909,15 +1912,42 @@ function downloadEliPDF(camp,sub,p3,p4,ko){
 
 // ── Admin ─────────────────────────────────────────────────
 function admLogin(){
-  if((document.getElementById('adm-pw')||{}).value!==ADMIN_PW){showToast('❌ Contraseña incorrecta');return;}
-  document.getElementById('adm-login').style.display='none';
-  document.getElementById('adm-panel').style.display='block';
-  renderAdmin(); showToast('✅ Admin activo');
+  var email=(document.getElementById('adm-email')||{}).value||'';
+  var pw=(document.getElementById('adm-pw')||{}).value||'';
+  var btn=document.getElementById('adm-btn');
+  var errEl=document.getElementById('adm-err');
+  if(!email||!pw){showToast('⚠️ Introduce email y contraseña');return;}
+  if(btn){btn.disabled=true;btn.textContent='Verificando...';}
+  if(errEl)errEl.style.display='none';
+  fetch(SB_URL+'/auth/v1/token?grant_type=password',{
+    method:'POST',
+    headers:{'apikey':SB_KEY,'Content-Type':'application/json'},
+    body:JSON.stringify({email:email,password:pw})
+  }).then(function(r){return r.json();}).then(function(data){
+    if(btn){btn.disabled=false;btn.textContent='Entrar';}
+    if(data.error||!data.access_token){
+      var msg=data.error_description||data.msg||'Credenciales incorrectas';
+      if(errEl){errEl.textContent='❌ '+msg;errEl.style.display='block';}
+      showToast('❌ Acceso denegado');
+      return;
+    }
+    // Valid login
+    ADM_TOKEN=data.access_token;
+    document.getElementById('adm-login').style.display='none';
+    document.getElementById('adm-panel').style.display='block';
+    renderAdmin(); showToast('✅ Admin activo');
+  }).catch(function(e){
+    if(btn){btn.disabled=false;btn.textContent='Entrar';}
+    showToast('❌ Error de conexión');
+    console.error(e);
+  });
 }
 function admLogout(){
+  ADM_TOKEN=null;
   document.getElementById('adm-login').style.display='block';
   document.getElementById('adm-panel').style.display='none';
   var pw=document.getElementById('adm-pw'); if(pw)pw.value='';
+  var em=document.getElementById('adm-email'); if(em)em.value='';
   showToast('Sesión cerrada');
 }
 function renderAdmin(){
