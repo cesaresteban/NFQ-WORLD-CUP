@@ -175,10 +175,12 @@ select.fi option{background:var(--bg2)}
 .fdv{height:1px;background:var(--bd2);margin:14px 0}
 .sec-title{font-family:var(--fm);font-size:10px;letter-spacing:3px;color:var(--g);text-transform:uppercase;margin-bottom:10px;opacity:.85}
 /* GRUPOS FORM */
-.mgg{display:grid;gap:4px;max-width:580px;margin:0 auto;width:100%}
-.mrow{display:grid;grid-template-columns:1fr 28px 1fr 48px;gap:6px;align-items:center;background:var(--bg2);border-radius:8px;padding:6px 10px;border:1px solid var(--bd2)}
-.mt2{font-size:12px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:220px}
-.mt2.r{text-align:right}
+.mgg{display:grid;gap:4px;max-width:620px;margin:0 auto;width:100%}
+.grp-row{display:grid;grid-template-columns:30px 1fr auto 1fr 30px;align-items:center;gap:10px;background:var(--bg2);border-radius:8px;padding:7px 10px;border:1px solid var(--bd2)}
+.grp-name{font-size:12px;font-weight:600;text-transform:uppercase;text-align:right}
+.grp-name.r{text-align:left}
+.grp-flag{width:30px;height:20px;object-fit:cover;border-radius:3px;box-shadow:0 0 0 1px var(--bd2);display:block}
+.grp-flag-none{background:var(--s2);width:30px;height:20px;border-radius:3px;display:block}
 .mvs{font-family:var(--fm);font-size:9px;color:var(--t3);text-align:center}
 .msel{background:var(--s1);border:1px solid var(--bd);border-radius:5px;padding:4px 2px;color:var(--t1);font-size:13px;font-family:var(--fm);font-weight:700;width:100%;outline:none;cursor:pointer;text-align:center}
 .msel:focus{border-color:var(--g)}
@@ -320,7 +322,6 @@ footer span{color:var(--g)}
 .mrow:last-child{border-bottom:none}
 .mt2{flex:1;font-size:12px;font-weight:700;letter-spacing:.3px;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .mt2.r{text-align:right}
-.mvs-mid{display:flex;align-items:center;gap:6px;padding:0 8px;flex-shrink:0}
 .mflg{font-size:16px;line-height:1}
 </style>
 </head>
@@ -759,6 +760,9 @@ footer span{color:var(--g)}
 
 <footer><p>⚽ NFQ World Cup Porra 2026 · <span>USA · México · Canadá</span> · 11 jun – 19 jul 2026</p></footer>
 <script>
+
+var GR_FLAG = {'México':'mx','Sudáfrica':'za','Corea del Sur':'kr','Chequia':'cz','Canadá':'ca','Bosnia':'ba','Qatar':'qa','Suiza':'ch','Brasil':'br','Marruecos':'ma','Haití':'ht','Escocia':'gb-sct','EE.UU.':'us','Paraguay':'py','Australia':'au','Turquía':'tr','Alemania':'de','Curazao':'cw','C.Marfil':'ci','Ecuador':'ec','Holanda':'nl','Japón':'jp','Suecia':'se','Túnez':'tn','Bélgica':'be','Egipto':'eg','Irán':'ir','N.Zelanda':'nz','España':'es','Cabo Verde':'cv','Arabia Saudita':'sa','Uruguay':'uy','Francia':'fr','Senegal':'sn','Irak':'iq','Noruega':'no','Argentina':'ar','Argelia':'dz','Austria':'at','Jordania':'jo','Portugal':'pt','Congo':'cg','Uzbekistán':'uz','Colombia':'co','Inglaterra':'gb-eng','Croacia':'hr','Ghana':'gh','Panamá':'pa'};
+function grpFlag(name){var c=GR_FLAG[name];return c?'<img class="grp-flag" src="https://flagcdn.com/w40/'+c+'.png" alt="'+name+'" title="'+name+'" loading="lazy"/>'+'<span class="grp-flag grp-flag-none" style="display:none"></span>':'<span class="grp-flag grp-flag-none"></span>';}
 
 var MUNDIAL_STARTED=(Date.now()>=new Date('2026-06-11T19:00:00Z').getTime());
 var ELI_ACTIVE=false;
@@ -1643,25 +1647,27 @@ function validateStep0(){
 }
 
 function buildGruposForm(){
-  var cont=document.getElementById('grupos-fc'); if(!cont)return;
-  var html='';
+  var cont=document.getElementById("grupos-fc"); if(!cont)return;
+  var html="";
   Object.keys(GR).forEach(function(g){
     var data=GR[g];
     html+='<div class="ghdr">GRUPO '+g+' — '+data.t.join(' · ')+'</div><div class="mgg">';
     data.m.forEach(function(m,i){
-      var fid='fg_'+g+'_'+i;
-      html+='<div class="mrow">'
-        +'<div class="mt2">'+m.h.toUpperCase()+'</div>'
-        +'<div class="mvs-mid"><div class="mbtn-wrap">'
+      var fid="fg_"+g+"_"+i;
+      html+='<div class="grp-row">'
+        +grpFlag(m.h)
+        +'<div class="grp-name">'+m.h+'</div>'
+        +'<div class="mbtn-wrap">'
           +'<button class="mbtn" data-fid="'+fid+'" data-val="1">1</button>'
           +'<button class="mbtn" data-fid="'+fid+'" data-val="x">X</button>'
           +'<button class="mbtn" data-fid="'+fid+'" data-val="2">2</button>'
-        +'</div></div>'
-        +'<div class="mt2 r">'+m.a.toUpperCase()+'</div>'
+        +'</div>'
+        +'<div class="grp-name r">'+m.a+'</div>'
+        +grpFlag(m.a)
         +'</div>'
         +'<input type="hidden" id="'+fid+'" value=""/>';
     });
-    html+='</div>';
+    html+="</div>";
   });
   cont.innerHTML=html;
   cont.querySelectorAll('.mbtn').forEach(function(btn){
@@ -1670,6 +1676,7 @@ function buildGruposForm(){
     });
   });
 }
+
 function selMatch(btn,fid,val){
   var h=document.getElementById(fid); if(h)h.value=val;
   btn.parentElement.querySelectorAll(".mbtn").forEach(function(b){b.className="mbtn";});
