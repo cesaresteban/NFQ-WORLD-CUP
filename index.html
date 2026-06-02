@@ -263,7 +263,7 @@ select.fi option{background:var(--bg2)}
 .pch{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:7px}
 .pau{font-weight:600;font-size:13px}
 .pti{font-size:10px;color:var(--t3);font-family:var(--fm)}
-.pbo{font-size:14px;color:var(--t2);line-height:1.6;margin-bottom:10px}
+.pbo{font-size:14px;color:var(--t2);line-height:1.6;margin-bottom:10px;word-break:break-word;overflow-wrap:break-word;overflow:hidden}
 .pfo{display:flex;align-items:center;gap:8px}
 .vbt{display:flex;align-items:center;gap:5px;background:var(--s2);border:1px solid var(--bd2);border-radius:20px;padding:5px 13px;cursor:pointer;font-size:13px;font-weight:600;font-family:var(--fb);color:var(--t2);transition:.15s}
 .vbt:hover{border-color:var(--bd);color:var(--t1)}
@@ -1225,12 +1225,7 @@ function sbFetch(method, table, params, body) {
   var url = SB_URL+'/rest/v1/'+table+(params?'?'+params:'');
   return fetch(url, {
     method: method,
-    headers: {
-      'apikey': SB_KEY,
-      'Authorization': 'Bearer ' + (ADM_TOKEN || SB_KEY),
-      'Content-Type': 'application/json',
-      'Prefer': 'return=representation'
-    },
+    headers: {'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=representation'},
     body: body ? JSON.stringify(body) : undefined
   }).then(function(r){
     if(!r.ok)return r.text().then(function(t){throw new Error(t);});
@@ -1275,8 +1270,8 @@ function loadPosts(){
 function savePost(autor,texto){return sbFetch('POST','posts',null,{autor:autor,texto:texto,up:0,down:0}).then(function(){loadPosts();});}
 function sbDeletePost(id){return sbFetch('DELETE','posts','id=eq.'+id).then(function(){loadPosts();});}
 function sbVotePost(id,up,down){
-  var post=SB_POSTS.find(function(p){return p.id===id;}); if(!post)return Promise.resolve();
-  return sbFetch('PATCH','posts','id=eq.'+id,{up:Math.max(0,post.up+up),down:Math.max(0,post.down+down)}).then(function(){loadPosts();});
+  // Kept for compatibility but voting now handled directly in votePost
+  return Promise.resolve();
 }
 
 // ── Main refresh ──────────────────────────────────────────
@@ -2194,6 +2189,7 @@ function delPostAdmin(id){ sbDeletePost(id).then(function(){renderAdmin();showTo
 // ── Vestuario ─────────────────────────────────────────────
 function publishPost(){
   var txt=((document.getElementById('v-txt')||{}).value||'').trim();
+  if(txt.length>300){showToast('⚠️ Máximo 300 caracteres');return;}
   var aut=((document.getElementById('v-aut')||{}).value||'').trim()||'Anónimo';
   if(!txt){showToast('⚠️ Escribe algo primero');return;}
   savePost(aut,txt).then(function(){var el=document.getElementById('v-txt');if(el)el.value='';showToast('✅ Publicado');});
@@ -2217,7 +2213,19 @@ function votePost(id,dir){
   var upD=0,downD=0;
   if(prev===dir){if(dir==='up')upD=-1;else downD=-1;LOCAL_VOTES[id]=null;}
   else{if(prev==='up')upD--;else if(prev==='down')downD--;if(dir==='up')upD++;else downD++;LOCAL_VOTES[id]=dir;}
-  saveVotes(); sbVotePost(id,upD,downD);
+  // Optimistic update in memory
+  post.up=Math.max(0,post.up+upD);
+  post.down=Math.max(0,post.down+downD);
+  saveVotes();
+  renderPosts();
+  // Persist and sync from server response
+  sbFetch('PATCH','posts','id=eq.'+id,{up:post.up,down:post.down}).then(function(res){
+    if(res&&res[0]){
+      post.up=parseInt(res[0].up)||post.up;
+      post.down=parseInt(res[0].down)||post.down;
+      renderPosts();
+    }
+  }).catch(function(e){console.error('vote error',e);});
 }
 
 function editResult(key, homeTeam, awayTeam){
